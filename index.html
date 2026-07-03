@@ -579,16 +579,27 @@ function renderWedSection(k){
 function editWedTask(txEl,k,i){
   const inp=document.createElement('input');inp.className='ti';inp.value=S.weddingTasks[k][i].text;inp.style.cssText='flex:1;font-size:.86rem;';
   txEl.replaceWith(inp);inp.focus();
-  const done=async()=>{const v=inp.value.trim();if(v)S.weddingTasks[k][i].text=v;renderWedSection(k);await save('weddingTasks');};
-  inp.onblur=done;inp.onkeydown=e=>{if(e.key==='Enter')done();};
+  const done=async()=>{
+    const v=inp.value.trim();
+    if(v)S.weddingTasks[k][i].text=v;
+    renderWedSection(k);
+    renderTodoProgress();
+    await save('weddingTasks');
+  };
+  inp.onblur=done;
+  inp.onkeydown=e=>{if(e.key==='Enter'){inp.onblur=null;done();}};
 }
 
 async function addWedTask(){
-  const inp=document.getElementById('wed-new-in');const v=inp.value.trim();if(!v)return;
-  const cat=document.getElementById('wed-new-cat').value;
+  const inp=document.getElementById('wed-new-in');
+  const v=inp.value.trim();if(!v)return;
+  const catEl=document.getElementById('wed-new-cat');
+  const cat=catEl?catEl.value:'priority';
+  if(!S.weddingTasks[cat])S.weddingTasks[cat]=[];
   S.weddingTasks[cat].unshift({text:v,done:false});
   inp.value='';
-  renderWedSection(cat);renderTodoProgress();await save('weddingTasks');
+  renderTodos();
+  await save('weddingTasks');
 }
 
 // ══════════════════════════════════════════
