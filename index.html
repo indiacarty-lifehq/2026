@@ -3,17 +3,16 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Life HQ</title>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<title>Wedding Planner</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 :root{
   --bg:#f0ebe3; --surface:#faf7f2; --surface2:#ede8df; --border:#ddd5c8;
   --text:#2c2420; --muted:#9c8e82;
   --green:#2d5a3d; --green-l:#3d7a52; --green-p:rgba(45,90,61,0.08);
-  --pink:#d4849a; --pink-d:#b8607a;
+  --pink:#d4849a; --pink-d:#b8607a; --pink-p:rgba(212,132,154,0.1);
   --sand:#c4a882; --sand-d:#8b7355;
-  --blue:#5b8fa8; --purple:#7a6b8a; --orange:#b87333; --mauve:#9b6b9b;
   --pos:#2d5a3d; --neg:#b8607a;
 }
 *{box-sizing:border-box;margin:0;padding:0;}
@@ -22,676 +21,314 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 /* PIN */
 #pin-screen{position:fixed;inset:0;z-index:300;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;padding:24px;}
 #pin-screen.hidden{display:none;}
-.pin-logo{font-family:'Playfair Display',serif;font-size:3rem;color:var(--green);text-align:center;}
-.pin-logo span{display:block;font-family:'DM Sans',sans-serif;font-size:0.72rem;font-weight:600;letter-spacing:0.2em;text-transform:uppercase;color:var(--pink);margin-top:2px;}
+.pin-logo{font-family:'Playfair Display',serif;font-size:2.8rem;color:var(--green);text-align:center;line-height:1;}
+.pin-logo span{display:block;font-family:'DM Sans',sans-serif;font-size:0.7rem;font-weight:600;letter-spacing:0.22em;text-transform:uppercase;color:var(--pink);margin-top:6px;}
 .pin-sub{color:var(--muted);font-size:0.8rem;text-align:center;max-width:260px;line-height:1.6;}
-.pin-input{background:var(--surface);border:2px solid var(--border);border-radius:12px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:1.6rem;padding:12px 20px;text-align:center;letter-spacing:0.4em;outline:none;width:200px;}
+.pin-input{background:var(--surface);border:2px solid var(--border);border-radius:12px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:1.6rem;padding:12px 20px;text-align:center;letter-spacing:0.4em;outline:none;width:200px;transition:border-color .2s;}
 .pin-input:focus{border-color:var(--green);}
 .pin-err{color:var(--neg);font-size:0.78rem;min-height:1em;text-align:center;}
-.pin-hint{color:var(--muted);font-size:0.68rem;text-align:center;line-height:1.5;}
+.pin-hint{color:var(--muted);font-size:0.68rem;text-align:center;line-height:1.6;}
+.pin-btn{background:var(--green);color:#fff;border:none;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:0.88rem;font-weight:600;padding:11px 32px;cursor:pointer;transition:opacity .2s;}
+.pin-btn:hover{opacity:.88;}
 
 /* SYNC */
 #sync-bar{position:fixed;bottom:0;left:0;right:0;z-index:200;background:rgba(240,235,227,0.96);border-top:1px solid var(--border);padding:6px 16px;display:flex;align-items:center;gap:8px;font-size:0.7rem;color:var(--muted);backdrop-filter:blur(8px);}
 .sdot{width:6px;height:6px;border-radius:50%;background:var(--muted);flex-shrink:0;transition:background .3s;}
 .sdot.ok{background:var(--green);}
 .sdot.saving{background:var(--sand);animation:pulse 1s infinite;}
-.sdot.error{background:var(--neg);}
+.sdot.err{background:var(--neg);}
 @keyframes pulse{0%,100%{opacity:1;}50%{opacity:.3;}}
 
 /* NAV */
-nav{position:sticky;top:0;z-index:100;background:rgba(240,235,227,.96);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:2px;padding:0 14px;overflow-x:auto;scrollbar-width:none;}
-nav::-webkit-scrollbar{display:none;}
-.nav-brand{font-family:'Playfair Display',serif;font-size:1.15rem;color:var(--green);margin-right:14px;white-space:nowrap;padding:13px 0;flex-shrink:0;}
-.nb{background:none;border:none;cursor:pointer;color:var(--muted);font-family:'DM Sans',sans-serif;font-size:0.7rem;font-weight:600;letter-spacing:.05em;text-transform:uppercase;padding:6px 9px;border-radius:8px;white-space:nowrap;transition:all .2s;display:flex;align-items:center;gap:5px;flex-shrink:0;}
+nav{position:sticky;top:0;z-index:100;background:rgba(240,235,227,.96);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:2px;padding:0 16px;}
+.nav-brand{font-family:'Playfair Display',serif;font-size:1.1rem;color:var(--green);margin-right:16px;white-space:nowrap;padding:14px 0;flex-shrink:0;font-style:italic;}
+.nb{background:none;border:none;cursor:pointer;color:var(--muted);font-family:'DM Sans',sans-serif;font-size:0.72rem;font-weight:600;letter-spacing:.05em;text-transform:uppercase;padding:7px 12px;border-radius:8px;white-space:nowrap;transition:all .2s;flex-shrink:0;}
 .nb:hover{background:var(--surface2);color:var(--text);}
-.nb.active{background:var(--green);color:#fff;}
-.ndot{width:6px;height:6px;border-radius:50%;flex-shrink:0;}
+.nb.active{background:var(--pink-d);color:#fff;}
 
 /* LAYOUT */
-.sec{display:none;padding:24px 16px 90px;max-width:820px;margin:0 auto;}
+.sec{display:none;padding:24px 16px 90px;max-width:760px;margin:0 auto;}
 .sec.active{display:block;}
-.sh{margin-bottom:24px;}
-.st{font-family:'Playfair Display',serif;font-size:2.4rem;color:var(--green);line-height:1.1;margin-bottom:2px;}
-.ss{color:var(--muted);font-size:.75rem;letter-spacing:.07em;text-transform:uppercase;}
+
+/* HEADER */
+.page-title{font-family:'Playfair Display',serif;font-size:2.4rem;color:var(--green);margin-bottom:4px;line-height:1.1;}
+.page-sub{font-size:0.75rem;text-transform:uppercase;letter-spacing:0.1em;color:var(--muted);margin-bottom:24px;}
 
 /* CARDS */
-.card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:18px;margin-bottom:14px;box-shadow:0 1px 3px rgba(0,0,0,.04);}
-.ct{font-size:.6rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-bottom:12px;}
-.inote{background:var(--green-p);border:1px solid rgba(45,90,61,.15);border-radius:9px;padding:9px 13px;font-size:.77rem;color:var(--muted);line-height:1.55;margin-bottom:11px;}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:20px;margin-bottom:14px;box-shadow:0 1px 4px rgba(0,0,0,.04);}
+.ct{font-size:0.62rem;font-weight:700;letter-spacing:0.13em;text-transform:uppercase;color:var(--muted);margin-bottom:14px;}
+.inote{background:var(--green-p);border:1px solid rgba(45,90,61,.14);border-radius:9px;padding:9px 13px;font-size:0.77rem;color:var(--muted);line-height:1.55;margin-bottom:12px;}
 .inote strong{color:var(--green);}
 
-/* INPUTS */
-.ti{flex:1;background:var(--surface2);border:1px solid var(--border);border-radius:9px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:.84rem;padding:8px 11px;outline:none;transition:border-color .2s;}
-.ti:focus{border-color:var(--green);}
-.ti::placeholder{color:var(--muted);}
-.fi{background:var(--surface2);border:1px solid var(--border);border-radius:9px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:.82rem;padding:8px 10px;outline:none;transition:border-color .2s;width:100%;appearance:none;}
-.fi:focus{border-color:var(--green);}
-.fi option{background:var(--surface);}
-.frow{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px;}
-.fg{display:flex;flex-direction:column;gap:4px;flex:1;min-width:110px;}
-.fl{font-size:.6rem;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);}
-.btn{background:var(--green);color:#fff;border:none;border-radius:9px;font-family:'DM Sans',sans-serif;font-size:.82rem;font-weight:600;padding:9px 16px;cursor:pointer;transition:all .2s;white-space:nowrap;flex-shrink:0;}
-.btn:hover{background:var(--green-l);}
-.btn:disabled{opacity:.4;cursor:not-allowed;}
-.gbtn{background:var(--surface2);color:var(--muted);border:1px solid var(--border);border-radius:9px;font-family:'DM Sans',sans-serif;font-size:.82rem;font-weight:600;padding:9px 16px;cursor:pointer;transition:all .2s;white-space:nowrap;}
-.gbtn:hover{border-color:var(--green);color:var(--green);}
-.trow{display:flex;gap:8px;margin-bottom:11px;}
-textarea.fi{resize:vertical;min-height:80px;}
+/* COUNTDOWN */
+.countdown{text-align:center;padding:28px 20px;background:linear-gradient(135deg,rgba(212,132,154,.1),rgba(212,132,154,.03));border-radius:16px;border:1px solid rgba(212,132,154,.22);margin-bottom:14px;position:relative;overflow:hidden;}
+.countdown::before{content:'💍';position:absolute;font-size:5rem;opacity:.05;right:20px;top:50%;transform:translateY(-50%);}
+.countdown-n{font-family:'Playfair Display',serif;font-size:5.5rem;font-weight:700;line-height:1;color:var(--pink-d);}
+.countdown-l{font-size:0.72rem;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;color:var(--muted);margin-top:6px;}
+.countdown-date{font-size:0.85rem;color:var(--muted);margin-top:8px;}
 
-/* TODOS */
-.titem{display:flex;align-items:flex-start;gap:9px;padding:8px 0;border-bottom:1px solid var(--border);}
-.titem:last-child{border-bottom:none;}
-.tck{width:18px;height:18px;border:1.5px solid var(--border);border-radius:5px;background:none;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all .15s;margin-top:1px;}
+/* BUDGET */
+.bgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;}
+.bitem{background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:14px;}
+.bcat{font-size:0.62rem;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:5px;}
+.bamt{font-family:'Playfair Display',serif;font-size:1.35rem;font-weight:700;color:var(--text);}
+.btotal-row{display:flex;justify-content:space-between;align-items:center;padding-top:12px;border-top:1px solid var(--border);}
+.btotal-lbl{font-size:0.62rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);}
+.btotal-val{font-family:'Playfair Display',serif;font-size:1.6rem;font-weight:700;color:var(--green);}
+.edit-link{font-size:.68rem;font-weight:600;color:var(--green);cursor:pointer;letter-spacing:.04em;margin-left:8px;}
+.bedit-row{display:flex;gap:8px;align-items:center;margin-bottom:6px;}
+
+/* GUEST LIST */
+.gstats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px;}
+.gstat{background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:14px;text-align:center;}
+.gstat-n{font-family:'Playfair Display',serif;font-size:2.2rem;font-weight:700;line-height:1;}
+.gstat-l{font-size:0.62rem;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-top:3px;}
+
+/* Filter pills */
+.filter-row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px;}
+.fpill{background:var(--surface2);border:1px solid var(--border);border-radius:99px;font-size:0.72rem;font-weight:600;padding:5px 14px;cursor:pointer;transition:all .2s;color:var(--muted);}
+.fpill.active{background:var(--pink-d);color:#fff;border-color:var(--pink-d);}
+
+.ghead{display:grid;grid-template-columns:1fr 90px 100px 28px;gap:8px;padding:0 0 7px;border-bottom:1px solid var(--border);margin-bottom:4px;}
+.ghead span{font-size:.58rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);}
+.grow{display:grid;grid-template-columns:1fr 90px 100px 28px;gap:8px;align-items:center;padding:8px 0;border-bottom:1px solid rgba(221,213,200,.7);}
+.grow:last-child{border-bottom:none;}
+.gname{font-size:.84rem;font-weight:500;}
+.ggrp{font-size:.72rem;color:var(--muted);}
+.rsvp{font-size:.62rem;font-weight:700;padding:4px 8px;border-radius:6px;border:none;cursor:pointer;font-family:'DM Sans',sans-serif;letter-spacing:.03em;text-align:center;transition:all .15s;}
+.rsvp.p{background:var(--surface2);color:var(--muted);border:1px solid var(--border);}
+.rsvp.y{background:rgba(45,90,61,.1);color:var(--green);border:1px solid rgba(45,90,61,.25);}
+.rsvp.n{background:rgba(184,96,122,.1);color:var(--neg);border:1px solid rgba(184,96,122,.25);}
+.gdel{background:none;border:none;color:var(--muted);cursor:pointer;font-size:1rem;opacity:0;transition:opacity .15s;}
+.grow:hover .gdel{opacity:1;}
+
+/* TO-DO */
+.wsec{font-size:.6rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;padding:10px 0 8px;margin-top:6px;border-bottom:1px solid var(--border);margin-bottom:8px;display:flex;align-items:center;gap:8px;color:var(--muted);}
+.wdot{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
+.witem{display:flex;align-items:flex-start;gap:10px;padding:8px 0;border-bottom:1px solid rgba(221,213,200,.65);}
+.witem:last-child{border-bottom:none;}
+.witem-actions{display:flex;gap:3px;opacity:0;transition:opacity .15s;flex-shrink:0;}
+.witem:hover .witem-actions{opacity:1;}
+.wact{background:none;border:none;color:var(--muted);cursor:pointer;font-size:.82rem;padding:0 2px;line-height:1;}
+.tck{width:18px;height:18px;border:1.5px solid var(--border);border-radius:5px;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all .15s;margin-top:1px;}
 .tck:hover{border-color:var(--green);}
 .tck.done{background:var(--green);border-color:var(--green);}
 .tck.done::after{content:'✓';color:#fff;font-size:.7rem;font-weight:700;}
-.ttx{font-size:.86rem;line-height:1.45;flex:1;}
+.ttx{font-size:.87rem;line-height:1.45;flex:1;word-break:break-word;}
 .ttx.done{text-decoration:line-through;color:var(--muted);}
-.tdel{background:none;border:none;color:var(--muted);cursor:pointer;font-size:1rem;opacity:0;transition:opacity .15s;line-height:1;padding:0 2px;}
-.titem:hover .tdel{opacity:1;}
-@keyframes fadeIn{from{opacity:0;transform:translateY(-4px);}to{opacity:1;transform:none;}}
 
-/* WEEK GRID */
-.wgrid{display:grid;grid-template-columns:repeat(7,1fr);gap:5px;margin-bottom:11px;}
-.dcol{display:flex;flex-direction:column;gap:3px;}
-.dlbl{font-size:.55rem;font-weight:700;letter-spacing:.06em;color:var(--muted);text-align:center;padding-bottom:3px;text-transform:uppercase;}
-.dcol.today .dlbl{color:var(--green);}
-.dtag{font-size:.52rem;font-weight:600;text-align:center;padding:3px 2px;border-radius:5px;background:var(--surface2);border:1px solid var(--border);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.dtag.gym{background:rgba(45,90,61,.1);border-color:var(--green);color:var(--green);}
-.dtag.prep{background:rgba(196,168,130,.15);border-color:var(--sand);color:var(--sand-d);}
-.dtag.work{background:rgba(184,115,51,.1);border-color:var(--orange);color:var(--orange);}
-.dtag.remind{background:rgba(155,107,155,.1);border-color:var(--mauve);color:var(--mauve);}
-.dtag.event{background:rgba(212,132,154,.12);border-color:var(--pink);color:var(--pink-d);}
+/* Progress */
+.prog-wrap{margin-bottom:10px;}
+.prog-labels{display:flex;justify-content:space-between;font-size:.76rem;margin-bottom:5px;}
+.prog-bar{height:6px;background:var(--surface2);border-radius:99px;overflow:hidden;}
+.prog-fill{height:100%;border-radius:99px;transition:width .6s ease;}
 
-/* STATS */
-.srow{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:13px;}
-.sbox{background:var(--surface2);border:1px solid var(--border);border-radius:11px;padding:13px 10px;text-align:center;}
-.sval{font-family:'Playfair Display',serif;font-size:1.9rem;line-height:1;margin-bottom:3px;}
-.slbl{font-size:.6rem;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;}
+/* Forms */
+.trow{display:flex;gap:8px;margin-top:12px;}
+.ti{flex:1;background:var(--surface2);border:1px solid var(--border);border-radius:10px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:.85rem;padding:9px 12px;outline:none;transition:border-color .2s;}
+.ti:focus{border-color:var(--green);}
+.ti::placeholder{color:var(--muted);}
+.btn{background:var(--green);color:#fff;border:none;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:.82rem;font-weight:600;padding:9px 18px;cursor:pointer;transition:opacity .2s;white-space:nowrap;flex-shrink:0;}
+.btn:hover{opacity:.88;}
+.gbtn{background:var(--surface2);color:var(--muted);border:1px solid var(--border);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:.82rem;font-weight:600;padding:9px 16px;cursor:pointer;white-space:nowrap;}
+.fi{background:var(--surface2);border:1px solid var(--border);border-radius:9px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:.82rem;padding:8px 10px;outline:none;width:100%;transition:border-color .2s;}
+.fi:focus{border-color:var(--green);}
+.fg{display:flex;flex-direction:column;gap:4px;flex:1;min-width:100px;}
+.fl{font-size:.6rem;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);}
+.frow{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px;}
 
-/* PROGRESS */
-.pw{margin-bottom:9px;}
-.prow{display:flex;justify-content:space-between;font-size:.75rem;margin-bottom:5px;}
-.pbar{height:5px;background:var(--surface2);border-radius:99px;overflow:hidden;}
-.pfill{height:100%;border-radius:99px;transition:width .6s ease;}
-
-/* GYM */
-.gym-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-bottom:13px;}
-.gslot{display:flex;flex-direction:column;align-items:center;gap:3px;}
-.gslot-lbl{font-size:.56rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);}
-.gday{width:100%;min-height:52px;border:1.5px solid var(--border);border-radius:9px;background:var(--surface2);cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;transition:all .2s;padding:4px 2px;position:relative;}
-.gday:hover{border-color:var(--green);background:var(--green-p);}
-.gday.has{background:rgba(45,90,61,.08);border-color:var(--green);}
-.gday-icon{font-size:1rem;}
-.gday-name{font-size:.5rem;font-weight:700;color:var(--green);text-align:center;}
-
-/* VAPING */
-.vcal{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-bottom:10px;}
-.vday{aspect-ratio:1;border-radius:7px;background:var(--surface2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:.64rem;color:var(--muted);cursor:pointer;transition:all .2s;font-weight:600;}
-.vday.clean{background:rgba(91,143,168,.12);border-color:var(--blue);color:var(--blue);}
-.vday.slip{background:rgba(184,96,122,.1);border-color:var(--neg);color:var(--neg);}
-.vday.future{opacity:.3;cursor:default;}
-.vday.tod{box-shadow:0 0 0 2px var(--pink);}
-.streak-wrap{text-align:center;padding:24px;background:linear-gradient(135deg,var(--green-p),rgba(212,132,154,.06));border-radius:14px;border:1px solid var(--border);margin-bottom:13px;}
-.streak-n{font-family:'Playfair Display',serif;font-size:4.5rem;color:var(--green);display:block;line-height:1;}
-.streak-l{font-size:.68rem;font-weight:600;color:var(--muted);letter-spacing:.12em;text-transform:uppercase;margin-top:3px;}
-
-/* WEDDING */
-.wcount{text-align:center;padding:20px;background:linear-gradient(135deg,rgba(212,132,154,.1),rgba(212,132,154,.04));border-radius:14px;border:1px solid rgba(212,132,154,.25);margin-bottom:13px;}
-.wcount-n{font-family:'Playfair Display',serif;font-size:3.6rem;color:var(--pink-d);}
-.wcount-l{font-size:.68rem;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-top:3px;}
-.wsec{font-size:.58rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;padding:7px 0;margin-top:12px;border-bottom:1px solid var(--border);margin-bottom:7px;display:flex;align-items:center;gap:7px;color:var(--muted);}
-.wdot{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
-.witem{display:flex;align-items:flex-start;gap:9px;padding:7px 0;border-bottom:1px solid rgba(221,213,200,.7);}
-.witem:last-child{border-bottom:none;}
-.witem-actions{display:flex;gap:4px;opacity:0;transition:opacity .15s;flex-shrink:0;}
-.witem:hover .witem-actions{opacity:1;}
-.wact{background:none;border:none;color:var(--muted);cursor:pointer;font-size:.8rem;padding:0 2px;}
-
-/* BUDGET */
-.bgrid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:13px;}
-.bitem{background:var(--surface2);border:1px solid var(--border);border-radius:11px;padding:13px;}
-.bcat{font-size:.6rem;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px;}
-.bamt{font-family:'Playfair Display',serif;font-size:1.4rem;}
-
-/* GUESTS */
-.gstats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:13px;}
-.gstat{background:var(--surface2);border:1px solid var(--border);border-radius:11px;padding:13px;text-align:center;}
-.gstat-n{font-family:'Playfair Display',serif;font-size:1.7rem;}
-.gstat-l{font-size:.58rem;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;}
-.grow{display:grid;grid-template-columns:1fr 80px 90px 28px;gap:7px;align-items:center;padding:7px 0;border-bottom:1px solid var(--border);font-size:.81rem;}
-.grow:last-child{border-bottom:none;}
-.rsvp{font-size:.6rem;font-weight:700;padding:3px 8px;border-radius:5px;text-align:center;cursor:pointer;border:none;font-family:'DM Sans',sans-serif;}
-.rsvp.p{background:var(--surface2);color:var(--muted);border:1px solid var(--border);}
-.rsvp.y{background:rgba(45,90,61,.1);color:var(--green);border:1px solid rgba(45,90,61,.3);}
-.rsvp.n{background:rgba(184,96,122,.1);color:var(--neg);border:1px solid rgba(184,96,122,.3);}
-.gdel{background:none;border:none;color:var(--muted);cursor:pointer;font-size:1rem;opacity:0;}
-.grow:hover .gdel{opacity:1;}
-
-/* MONTH CALENDAR */
-.mcal{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;}
-.mcell{min-height:62px;border:1px solid var(--border);border-radius:7px;padding:4px;background:var(--surface);cursor:default;overflow:hidden;}
-.mcell.today{border-color:var(--green);background:rgba(45,90,61,.04);}
-.mcell.other{opacity:.35;}
-.mcell-d{font-size:.66rem;font-weight:700;color:var(--muted);margin-bottom:2px;}
-.mcell.today .mcell-d{color:var(--green);}
-.chip{font-size:.5rem;font-weight:600;padding:1px 4px;border-radius:3px;margin-bottom:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block;}
-.chip-b{background:rgba(212,132,154,.2);color:var(--pink-d);}
-.chip-a{background:rgba(212,132,154,.3);color:var(--pink-d);}
-.chip-ap{background:rgba(91,143,168,.15);color:var(--blue);}
-.chip-s{background:rgba(196,168,130,.2);color:var(--sand-d);}
-.chip-dl{background:rgba(184,96,122,.15);color:var(--neg);}
-.chip-o{background:var(--surface2);color:var(--muted);}
-.chip-g{background:rgba(45,90,61,.12);color:var(--green);}
-.chip-w{background:rgba(184,115,51,.12);color:var(--orange);}
-.chip-r{background:rgba(155,107,155,.12);color:var(--mauve);}
-.merow{display:flex;align-items:flex-start;gap:9px;padding:9px 0;border-bottom:1px solid var(--border);}
-.merow:last-child{border-bottom:none;}
-.mecat{font-size:.6rem;font-weight:700;padding:3px 7px;border-radius:5px;white-space:nowrap;}
-.medel{background:none;border:none;color:var(--muted);cursor:pointer;opacity:0;font-size:1rem;}
-.merow:hover .medel{opacity:1;}
-
-/* NUTRITION */
-.meal-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:13px;}
-.meal-card{background:var(--surface2);border:1px solid var(--border);border-radius:11px;padding:13px;transition:border-color .2s;}
-.meal-card:focus-within{border-color:var(--green);}
-.meal-type{font-size:.6rem;font-weight:700;color:var(--muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:.09em;}
-.meal-in{background:none;border:none;font-family:'DM Sans',sans-serif;font-size:.87rem;font-weight:500;color:var(--text);width:100%;padding:0;outline:none;}
-.meal-in::placeholder{color:var(--muted);}
-.wlog{max-height:180px;overflow-y:auto;}
-.wentry{display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid var(--border);font-size:.82rem;}
-.wentry:last-child{border-bottom:none;}
-.wdate{color:var(--muted);font-size:.73rem;}
-
-/* RECIPE */
-.rec-item{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--border);}
-.rec-item:last-child{border-bottom:none;}
-.rec-link{flex:1;text-decoration:none;}
-.rec-name{font-size:.87rem;font-weight:600;color:var(--green);}
-.rec-url{font-size:.7rem;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:260px;}
-.rec-del{background:none;border:none;color:var(--muted);cursor:pointer;opacity:0;font-size:1rem;}
-.rec-item:hover .rec-del{opacity:1;}
-
-/* MEASUREMENTS */
-.mentry{display:grid;grid-template-columns:90px 1fr 1fr 1fr;gap:7px;align-items:center;padding:7px 0;border-bottom:1px solid var(--border);font-size:.8rem;}
-.mentry:last-child{border-bottom:none;}
-.mhdr{display:grid;grid-template-columns:90px 1fr 1fr 1fr;gap:7px;padding-bottom:4px;border-bottom:1px solid var(--border);margin-bottom:4px;}
-.mhdr span{font-size:.58rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);text-align:center;}
-.mhdr span:first-child{text-align:left;}
-.mval{font-weight:600;text-align:center;}
-.mdelta{font-size:.7rem;text-align:center;}
-
-/* JOB */
-.jncard{background:var(--surface2);border:1px solid var(--border);border-radius:11px;padding:13px;margin-bottom:9px;}
-.jndate{font-size:.64rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:5px;}
-.jntxt{font-size:.84rem;line-height:1.6;white-space:pre-wrap;}
-
-/* EVENTS (work cal + reminders) */
-.evrow{display:flex;align-items:flex-start;gap:9px;padding:9px 0;border-bottom:1px solid var(--border);}
-.evrow:last-child{border-bottom:none;}
-.evbadge{font-size:.56rem;font-weight:700;letter-spacing:.06em;padding:3px 7px;border-radius:5px;white-space:nowrap;flex-shrink:0;margin-top:2px;text-transform:uppercase;border:1px solid;}
-.ev-once{background:rgba(184,115,51,.1);color:var(--orange);border-color:rgba(184,115,51,.25);}
-.ev-weekly{background:rgba(122,107,138,.1);color:var(--purple);border-color:rgba(122,107,138,.25);}
-.ev-monthly{background:rgba(155,107,155,.1);color:var(--mauve);border-color:rgba(155,107,155,.25);}
-.evbody{flex:1;}
-.evtitle{font-size:.87rem;font-weight:600;margin-bottom:2px;}
-.evmeta{font-size:.7rem;color:var(--muted);}
-.evdel{background:none;border:none;color:var(--muted);cursor:pointer;font-size:1rem;opacity:0;}
-.evrow:hover .evdel{opacity:1;}
-
-/* SESSION PICKER MODAL */
-.sp-modal{display:none;position:fixed;inset:0;z-index:250;background:rgba(44,36,32,.3);backdrop-filter:blur(6px);align-items:center;justify-content:center;padding:20px;}
-.sp-modal.open{display:flex;}
-.sp-inner{background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:22px;width:100%;max-width:340px;box-shadow:0 8px 32px rgba(0,0,0,.1);}
-.sp-title{font-family:'Playfair Display',serif;font-size:1.4rem;color:var(--green);margin-bottom:2px;}
-.sp-sub{font-size:.76rem;color:var(--muted);margin-bottom:16px;}
-.sp-opt{display:flex;align-items:center;gap:11px;padding:11px 13px;border-radius:11px;border:1.5px solid var(--border);background:var(--surface2);cursor:pointer;margin-bottom:7px;transition:all .15s;}
-.sp-opt:hover{border-color:var(--green);background:var(--green-p);}
-.sp-opt-icon{font-size:1.3rem;width:30px;text-align:center;}
-.sp-opt-name{font-weight:600;font-size:.87rem;}
-.sp-opt-detail{font-size:.7rem;color:var(--muted);}
+/* Category select */
+.cat-sel{background:var(--surface2);border:1px solid var(--border);border-radius:9px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:.82rem;padding:8px 10px;outline:none;width:100%;transition:border-color .2s;appearance:none;}
+.cat-sel:focus{border-color:var(--green);}
 </style>
 </head>
 <body>
 
+<!-- PIN -->
 <div id="pin-screen">
-  <div class="pin-logo">Life HQ<span>your personal command centre</span></div>
-  <div class="pin-sub">Enter your 4-digit PIN to sync across all your devices</div>
-  <input class="pin-input" id="pin-in" type="password" inputmode="numeric" maxlength="4" placeholder="••••" onkeydown="if(event.key==='Enter')pinSubmit()">
+  <div class="pin-logo">Wedding Planner<span>1 May 2027 · Bali</span></div>
+  <div class="pin-sub">Enter your PIN to access your wedding dashboard</div>
+  <input class="pin-input" type="password" id="pin-in" maxlength="4" inputmode="numeric" onkeydown="if(event.key==='Enter')pinSubmit()">
+  <button class="pin-btn" onclick="pinSubmit()">Enter</button>
   <div class="pin-err" id="pin-err"></div>
-  <div class="pin-hint">New here? Choose any 4 digits — use the same PIN on all devices</div>
-  <button class="btn" onclick="pinSubmit()">Enter</button>
+  <div class="pin-hint">First time? Pick any 4-digit PIN<br>Use the same PIN on all your devices</div>
 </div>
 
-<div id="sync-bar" style="display:none">
-  <div class="sdot" id="sdot"></div>
-  <span id="sync-msg">Syncing…</span>
-</div>
+<!-- SYNC BAR -->
+<div id="sync-bar"><div class="sdot" id="sdot"></div><span id="sync-txt">Connecting…</span></div>
 
-<!-- SESSION PICKER MODAL -->
-<div class="sp-modal" id="sp-modal">
-  <div class="sp-inner">
-    <div class="sp-title" id="sp-title">Monday</div>
-    <div class="sp-sub">What are you training?</div>
-    <div id="sp-opts"></div>
-    <button class="gbtn" style="width:100%;margin-top:4px;" onclick="clearGymDay()">Clear this day</button>
-    <button class="gbtn" style="width:100%;margin-top:6px;" onclick="closeSP()">Cancel</button>
-  </div>
-</div>
-
-<nav id="main-nav" style="display:none">
-  <span class="nav-brand">Life HQ</span>
-  <button class="nb active" onclick="goTo('week')" id="nb-week"><span class="ndot" style="background:var(--green)"></span>Week</button>
-  <button class="nb" onclick="goTo('month')" id="nb-month"><span class="ndot" style="background:var(--pink)"></span>Month</button>
-  <button class="nb" onclick="goTo('gym')" id="nb-gym"><span class="ndot" style="background:var(--green)"></span>Gym</button>
-  <button class="nb" onclick="goTo('nutrition')" id="nb-nutrition"><span class="ndot" style="background:var(--sand)"></span>Nutrition</button>
-  <button class="nb" onclick="goTo('vape')" id="nb-vape"><span class="ndot" style="background:var(--blue)"></span>Vaping</button>
-  <button class="nb" onclick="goTo('wedding')" id="nb-wedding"><span class="ndot" style="background:var(--pink)"></span>Wedding</button>
-  <button class="nb" onclick="goTo('job')" id="nb-job"><span class="ndot" style="background:var(--purple)"></span>Job</button>
-  <button class="nb" onclick="goTo('workcal')" id="nb-workcal"><span class="ndot" style="background:var(--orange)"></span>Work Cal</button>
-  <button class="nb" onclick="goTo('reminders')" id="nb-reminders"><span class="ndot" style="background:var(--mauve)"></span>Reminders</button>
+<!-- NAV -->
+<nav>
+  <span class="nav-brand">Wedding Planner</span>
+  <button class="nb active" id="nb-overview" onclick="goTo('overview')">💍 Days & Budget</button>
+  <button class="nb" id="nb-guests" onclick="goTo('guests')">👥 Guest List</button>
+  <button class="nb" id="nb-todos" onclick="goTo('todos')">✅ To-Do List</button>
 </nav>
 
-<!-- ═══ WEEK ═══ -->
-<section class="sec" id="s-week">
-  <div class="sh"><div class="st">This Week</div><div class="ss" id="week-range"></div></div>
-  <div class="card">
-    <div class="ct">Weekly Schedule</div>
-    <div class="wgrid" id="week-grid"></div>
-    <div class="inote">Gym sessions from the Gym tab · Reminders & events appear automatically</div>
-  </div>
-  <div class="card">
-    <div class="ct">Weekly To-Do's</div>
-    <div class="trow"><input class="ti" id="wtodo-in" placeholder="Add a task…" onkeydown="if(event.key==='Enter')addWeekTodo()"><button class="btn" onclick="addWeekTodo()">Add</button></div>
-    <div id="week-todos"></div>
-  </div>
-  <div class="card">
-    <div class="ct">Snapshot</div>
-    <div id="week-snap"></div>
-  </div>
-</section>
+<!-- ═══ OVERVIEW ═══ -->
+<section class="sec active" id="s-overview">
+  <div class="page-title">Days to Go</div>
+  <div class="page-sub">1 May 2027 · Bali, Indonesia</div>
 
-<!-- ═══ MONTH ═══ -->
-<section class="sec" id="s-month">
-  <div class="sh"><div class="st" id="month-title">Month</div><div class="ss">full calendar view</div></div>
-  <div style="display:flex;gap:8px;align-items:center;margin-bottom:14px;">
-    <button class="gbtn" onclick="changeMonth(-1)" style="padding:7px 14px;">‹</button>
-    <div style="flex:1;text-align:center;font-weight:600;font-size:.9rem;" id="month-nav-lbl"></div>
-    <button class="gbtn" onclick="changeMonth(1)" style="padding:7px 14px;">›</button>
+  <div class="countdown">
+    <div class="countdown-n" id="countdown-n">—</div>
+    <div class="countdown-l">Days Until the Big Day</div>
+    <div class="countdown-date" id="countdown-date"></div>
   </div>
-  <div class="card" style="padding:14px;">
-    <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:2px;margin-bottom:5px;">
-      <div style="text-align:center;font-size:.56rem;font-weight:700;color:var(--muted);letter-spacing:.06em;">MON</div>
-      <div style="text-align:center;font-size:.56rem;font-weight:700;color:var(--muted);letter-spacing:.06em;">TUE</div>
-      <div style="text-align:center;font-size:.56rem;font-weight:700;color:var(--muted);letter-spacing:.06em;">WED</div>
-      <div style="text-align:center;font-size:.56rem;font-weight:700;color:var(--muted);letter-spacing:.06em;">THU</div>
-      <div style="text-align:center;font-size:.56rem;font-weight:700;color:var(--muted);letter-spacing:.06em;">FRI</div>
-      <div style="text-align:center;font-size:.56rem;font-weight:700;color:var(--muted);letter-spacing:.06em;">SAT</div>
-      <div style="text-align:center;font-size:.56rem;font-weight:700;color:var(--muted);letter-spacing:.06em;">SUN</div>
-    </div>
-    <div class="mcal" id="month-grid"></div>
-  </div>
-  <div class="card">
-    <div class="ct">Add Event</div>
-    <div class="frow">
-      <div class="fg" style="flex:2;min-width:150px;"><label class="fl">Title</label><input class="fi" id="me-title" placeholder="e.g. Mum's birthday…"></div>
-      <div class="fg"><label class="fl">Date</label><input class="fi" type="date" id="me-date"></div>
-      <div class="fg"><label class="fl">Time (opt)</label><input class="fi" type="time" id="me-time"></div>
-    </div>
-    <div class="frow">
-      <div class="fg"><label class="fl">Category</label>
-        <select class="fi" id="me-cat">
-          <option value="birthday">🎂 Birthday</option>
-          <option value="anniversary">💍 Anniversary</option>
-          <option value="appointment">📋 Appointment</option>
-          <option value="social">🥂 Social</option>
-          <option value="deadline">⚡ Deadline</option>
-          <option value="other">📌 Other</option>
-        </select>
-      </div>
-      <div class="fg"><label class="fl">Repeats yearly?</label>
-        <select class="fi" id="me-repeat"><option value="no">One-off</option><option value="yes">Every year</option></select>
-      </div>
-    </div>
-    <div class="frow">
-      <div class="fg" style="flex:2;"><label class="fl">Notes (opt)</label><input class="fi" id="me-notes" placeholder="Any detail…"></div>
-      <div class="fg" style="justify-content:flex-end;"><label class="fl">&nbsp;</label><button class="btn" onclick="addMonthEvent()" style="width:100%">Add</button></div>
-    </div>
-  </div>
-  <div class="card"><div class="ct">All Events</div><div id="month-event-list"></div></div>
-</section>
 
-<!-- ═══ GYM ═══ -->
-<section class="sec" id="s-gym">
-  <div class="sh"><div class="st">Gym</div><div class="ss">30 min stair machine · then weights</div></div>
   <div class="card">
-    <div class="ct">This Week — tap a day to assign a session</div>
-    <div class="gym-grid" id="gym-grid"></div>
-    <div style="display:flex;justify-content:space-between;align-items:center;">
-      <span class="inote" style="margin:0;flex:1;">Sessions: <strong id="gym-count">0 / 3</strong> · Flex optional</span>
-      <button class="gbtn" onclick="toggleGymEdit()" style="margin-left:8px;font-size:.72rem;padding:6px 10px;">✏️ Edit Sessions</button>
-    </div>
-    <div id="gym-edit-panel" style="display:none;margin-top:12px;padding-top:12px;border-top:1px solid var(--border);">
-      <div class="ct">Edit Session Names</div>
-      <div id="gym-edit-inputs" style="display:flex;flex-direction:column;gap:8px;"></div>
-      <div style="display:flex;gap:8px;margin-top:10px;">
-        <button class="btn" onclick="saveGymLabels()" style="flex:1;">Save</button>
-        <button class="gbtn" onclick="toggleGymEdit()" style="flex:1;">Cancel</button>
-      </div>
-    </div>
-  </div>
-  <div class="card">
-    <div class="ct">Session Notes</div>
-    <div class="trow"><input class="ti" id="gym-note-in" placeholder="e.g. Felt strong on squats…" onkeydown="if(event.key==='Enter')addGymNote()"><button class="btn" onclick="addGymNote()">Save</button></div>
-    <div id="gym-notes"></div>
-  </div>
-</section>
-
-<!-- ═══ NUTRITION ═══ -->
-<section class="sec" id="s-nutrition">
-  <div class="sh"><div class="st">Nutrition</div><div class="ss">1800 cal · 120g protein · goal 63kg</div></div>
-  <div class="card">
-    <div class="ct">Weight Progress</div>
-    <div class="srow">
-      <div class="sbox"><div class="sval" style="color:var(--sand)">67</div><div class="slbl">Start (kg)</div></div>
-      <div class="sbox"><div class="sval" id="cur-weight" style="color:var(--text)">64.9</div><div class="slbl">Current (kg)</div></div>
-      <div class="sbox"><div class="sval" style="color:var(--green)">63</div><div class="slbl">Goal (kg)</div></div>
-    </div>
-    <div class="pw"><div class="prow"><span>Progress to goal</span><span id="wpct-lbl"></span></div><div class="pbar"><div class="pfill" id="wbar" style="background:var(--green)"></div></div></div>
-    <div class="trow" style="margin-top:10px;"><input class="ti" type="number" step="0.1" id="w-in" placeholder="Log today's weight (kg)…"><button class="btn" onclick="logWeight()">Log</button></div>
-    <div class="wlog" id="wlog" style="margin-top:10px;"></div>
-  </div>
-  <div class="card">
-    <div class="ct">Body Measurements</div>
-    <div class="inote">Track in inches · log once a week on the same day</div>
-    <div class="srow">
-      <div class="sbox"><div class="sval" id="m-waist" style="color:var(--pink-d)">—</div><div class="slbl">Waist (in)</div></div>
-      <div class="sbox"><div class="sval" id="m-hips" style="color:var(--pink)">—</div><div class="slbl">Hips (in)</div></div>
-      <div class="sbox"><div class="sval" id="m-glutes" style="color:var(--green)">—</div><div class="slbl">Glutes (in)</div></div>
-    </div>
-    <div class="frow">
-      <div class="fg"><label class="fl">Waist (in)</label><input class="fi" type="number" step="0.1" id="in-waist" placeholder="28.5"></div>
-      <div class="fg"><label class="fl">Hips (in)</label><input class="fi" type="number" step="0.1" id="in-hips" placeholder="38.0"></div>
-      <div class="fg"><label class="fl">Glutes (in)</label><input class="fi" type="number" step="0.1" id="in-glutes" placeholder="40.0"></div>
-      <div class="fg" style="justify-content:flex-end;"><label class="fl">&nbsp;</label><button class="btn" onclick="logMeas()" style="width:100%">Log</button></div>
-    </div>
-    <div id="meas-log" style="margin-top:8px;max-height:180px;overflow-y:auto;"></div>
-  </div>
-  <div class="card">
-    <div class="ct">Sunday Meal Prep</div>
-    <div class="inote">Update each Sunday · Chicken only 🍗</div>
-    <div class="meal-grid">
-      <div class="meal-card"><div class="meal-type">Lunch A ×2</div><input class="meal-in" id="meal-la" placeholder="e.g. Asian chicken rice bowl…" onblur="saveMeals()"></div>
-      <div class="meal-card"><div class="meal-type">Lunch B ×2</div><input class="meal-in" id="meal-lb" placeholder="e.g. Teriyaki chicken noodles…" onblur="saveMeals()"></div>
-      <div class="meal-card" style="border-color:rgba(45,90,61,.2)"><div class="meal-type">Dinner A ×2</div><input class="meal-in" id="meal-da" placeholder="e.g. Chicken pasta bake…" onblur="saveMeals()"></div>
-      <div class="meal-card" style="border-color:rgba(45,90,61,.2)"><div class="meal-type">Dinner B ×2</div><input class="meal-in" id="meal-db" placeholder="e.g. Chicken yiros…" onblur="saveMeals()"></div>
-    </div>
-  </div>
-  <div class="card">
-    <div class="ct">Recipe Backlog</div>
-    <div class="inote">Save recipes by name + URL — tap to open directly</div>
-    <div class="frow">
-      <div class="fg" style="flex:2;min-width:130px;"><label class="fl">Recipe Name</label><input class="fi" id="rec-name" placeholder="e.g. Honey Garlic Chicken Bowl"></div>
-      <div class="fg" style="flex:2;min-width:130px;"><label class="fl">URL</label><input class="fi" id="rec-url" placeholder="https://…"></div>
-      <div class="fg" style="justify-content:flex-end;"><label class="fl">&nbsp;</label><button class="btn" onclick="saveRecipe()" style="width:100%">Save</button></div>
-    </div>
-    <div id="recipe-list"></div>
-  </div>
-  <div class="card">
-    <div class="ct">Prep Day Checklist</div>
-    <div class="trow"><input class="ti" id="prep-in" placeholder="Add a prep step…" onkeydown="if(event.key==='Enter')addPrepItem()"><button class="btn" onclick="addPrepItem()">Add</button></div>
-    <div id="prep-list"></div>
-  </div>
-</section>
-
-<!-- ═══ VAPING ═══ -->
-<section class="sec" id="s-vape">
-  <div class="sh"><div class="st">Quitting Vaping</div><div class="ss" id="vape-sub">patches · you've got this</div></div>
-  <div class="streak-wrap"><span class="streak-n" id="streak-n">0</span><div class="streak-l" id="streak-l">Days Clean This Month</div></div>
-  <div class="card">
-    <div class="ct" id="vape-cal-ct">This Month</div>
-    <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-bottom:5px;">
-      <div style="text-align:center;font-size:.58rem;font-weight:700;color:var(--muted)">MON</div>
-      <div style="text-align:center;font-size:.58rem;font-weight:700;color:var(--muted)">TUE</div>
-      <div style="text-align:center;font-size:.58rem;font-weight:700;color:var(--muted)">WED</div>
-      <div style="text-align:center;font-size:.58rem;font-weight:700;color:var(--muted)">THU</div>
-      <div style="text-align:center;font-size:.58rem;font-weight:700;color:var(--muted)">FRI</div>
-      <div style="text-align:center;font-size:.58rem;font-weight:700;color:var(--muted)">SAT</div>
-      <div style="text-align:center;font-size:.58rem;font-weight:700;color:var(--muted)">SUN</div>
-    </div>
-    <div class="vcal" id="vape-cal"></div>
-    <div style="font-size:.7rem;color:var(--muted);margin-top:5px;">🔵 Clean · 🔴 Slip · tap to cycle</div>
-  </div>
-  <div class="card">
-    <div class="ct">Craving Log</div>
-    <div class="trow"><input class="ti" id="craving-in" placeholder="Note a craving or trigger…" onkeydown="if(event.key==='Enter')addCraving()"><button class="btn" onclick="addCraving()">Log</button></div>
-    <div id="craving-log"></div>
-  </div>
-</section>
-
-<!-- ═══ WEDDING ═══ -->
-<section class="sec" id="s-wedding">
-  <div class="sh"><div class="st">Wedding</div><div class="ss">1 May 2027 · Bali 💍</div></div>
-  <div class="wcount"><div class="wcount-n" id="wed-days">—</div><div class="wcount-l">days to go</div></div>
-  <div class="card">
-    <div class="ct">Budget <span style="color:var(--green);cursor:pointer;font-size:.68rem;" onclick="toggleBudgetEdit()">✏️ EDIT</span></div>
+    <div class="ct">Budget <span class="edit-link" onclick="toggleBudgetEdit()">✏️ Edit</span></div>
     <div id="budget-view">
       <div class="bgrid" id="budget-grid"></div>
-      <div style="display:flex;justify-content:space-between;padding-top:10px;border-top:1px solid var(--border);">
-        <span style="font-size:.62rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);">Total</span>
-        <span id="budget-total" style="font-family:'Playfair Display',serif;font-size:1.4rem;color:var(--green);"></span>
+      <div class="btotal-row">
+        <span class="btotal-lbl">Total</span>
+        <span class="btotal-val" id="budget-total">$0</span>
       </div>
     </div>
     <div id="budget-edit" style="display:none;">
-      <div id="budget-edit-rows" style="display:flex;flex-direction:column;gap:8px;margin-bottom:11px;"></div>
+      <div id="budget-edit-rows" style="margin-bottom:12px;"></div>
       <div class="frow">
         <div class="fg" style="flex:2;"><label class="fl">Category</label><input class="fi" id="bud-cat" placeholder="e.g. Flowers"></div>
         <div class="fg"><label class="fl">Amount (AUD)</label><input class="fi" type="number" id="bud-amt" placeholder="0"></div>
         <div class="fg" style="justify-content:flex-end;"><label class="fl">&nbsp;</label><button class="btn" onclick="addBudgetItem()" style="width:100%">Add</button></div>
       </div>
-      <button class="gbtn" onclick="toggleBudgetEdit()" style="width:100%">Done</button>
-    </div>
-  </div>
-  <div class="card">
-    <div class="ct">Guest List</div>
-    <div class="gstats">
-      <div class="gstat"><div class="gstat-n" id="gs-inv" style="color:var(--pink-d)">0</div><div class="gstat-l">Invited</div></div>
-      <div class="gstat"><div class="gstat-n" id="gs-yes" style="color:var(--green)">0</div><div class="gstat-l">RSVP Yes</div></div>
-      <div class="gstat"><div class="gstat-n" id="gs-no" style="color:var(--neg)">0</div><div class="gstat-l">RSVP No</div></div>
-    </div>
-    <div style="display:grid;grid-template-columns:1fr 80px 90px 28px;gap:7px;padding:0 0 6px;border-bottom:1px solid var(--border);margin-bottom:4px;">
-      <span style="font-size:.58rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);">Name</span>
-      <span style="font-size:.58rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);">Group</span>
-      <span style="font-size:.58rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);text-align:center;">RSVP</span>
-      <span></span>
-    </div>
-    <div id="guest-list" style="max-height:300px;overflow-y:auto;"></div>
-    <div class="frow" style="margin-top:12px;">
-      <div class="fg" style="flex:2;"><label class="fl">Name</label><input class="fi" id="g-name" placeholder="Full name"></div>
-      <div class="fg"><label class="fl">Group</label><input class="fi" id="g-group" placeholder="Family / Friends"></div>
-      <div class="fg" style="justify-content:flex-end;"><label class="fl">&nbsp;</label><button class="btn" onclick="addGuest()" style="width:100%">Add</button></div>
-    </div>
-  </div>
-  <div class="card">
-    <div class="ct">To-Do List</div>
-    <div class="inote">Tap ✏️ to rename · hold on mobile · × to delete</div>
-    <div id="wed-priority-sec" class="wsec"><span class="wdot" style="background:#f59e0b"></span>Current Priorities</div><div id="wed-priority"></div>
-    <div class="wsec"><span class="wdot" style="background:#8b5cf6"></span>Travel & Accommodation</div><div id="wed-travel"></div>
-    <div class="wsec"><span class="wdot" style="background:#f59e0b"></span>Wedding Activities</div><div id="wed-activities"></div>
-    <div class="wsec"><span class="wdot" style="background:#06b6d4"></span>Guest Communication</div><div id="wed-guests"></div>
-    <div class="wsec"><span class="wdot" style="background:var(--pink)"></span>Venue Coordination</div><div id="wed-venue"></div>
-    <div class="wsec"><span class="wdot" style="background:#ef4444"></span>Legal</div><div id="wed-legal"></div>
-    <div class="wsec"><span class="wdot" style="background:var(--purple)"></span>Personal</div><div id="wed-personal"></div>
-    <div class="trow" style="margin-top:12px;">
-      <input class="ti" id="wed-new-in" placeholder="Add a wedding task…" onkeydown="if(event.key==='Enter')addWedTask()">
-      <button class="btn" onclick="addWedTask()">Add</button>
+      <button class="gbtn" onclick="toggleBudgetEdit()" style="width:100%;margin-top:4px;">Done</button>
     </div>
   </div>
 </section>
 
-<!-- ═══ JOB ═══ -->
-<section class="sec" id="s-job">
-  <div class="sh"><div class="st">New Job</div><div class="ss">Starting next week · brain dump as you go</div></div>
-  <div class="card">
-    <div class="ct">Pre-Start Checklist</div>
-    <div id="job-prestart"></div>
+<!-- ═══ GUESTS ═══ -->
+<section class="sec" id="s-guests">
+  <div class="page-title">Guest List</div>
+  <div class="page-sub">Tap RSVP badge to cycle status</div>
+
+  <div class="gstats">
+    <div class="gstat"><div class="gstat-n" id="gs-inv" style="color:var(--pink-d)">0</div><div class="gstat-l">Invited</div></div>
+    <div class="gstat"><div class="gstat-n" id="gs-yes" style="color:var(--green)">0</div><div class="gstat-l">RSVP Yes</div></div>
+    <div class="gstat"><div class="gstat-n" id="gs-no" style="color:var(--neg)">0</div><div class="gstat-l">RSVP No</div></div>
   </div>
+
   <div class="card">
-    <div class="ct">Week 1 Notes</div>
-    <div class="inote">Jot anything down — names, processes, questions, follow-ups</div>
-    <textarea class="fi" id="job-ta" placeholder="e.g. Met Sarah from finance — handles expense claims…" style="min-height:90px;"></textarea>
-    <button class="btn" onclick="saveJobNote()" style="width:100%;margin-top:8px;">Save Note</button>
-  </div>
-  <div id="job-notes"></div>
-  <div class="card">
-    <div class="ct">30/60/90 Day Goals</div>
-    <div class="inote">Fill this in after your first week once you know what the role looks like</div>
-    <div class="trow"><input class="ti" id="job-goal-in" placeholder="Add a goal…" onkeydown="if(event.key==='Enter')addJobGoal()"><button class="btn" onclick="addJobGoal()">Add</button></div>
-    <div id="job-goals"></div>
+    <div class="filter-row">
+      <button class="fpill active" id="fp-all" onclick="setFilter('all')">All</button>
+      <button class="fpill" id="fp-family" onclick="setFilter('family')">Family</button>
+      <button class="fpill" id="fp-friends" onclick="setFilter('friends')">Friends</button>
+      <button class="fpill" id="fp-yes" onclick="setFilter('yes')">✓ Yes</button>
+      <button class="fpill" id="fp-no" onclick="setFilter('no')">✗ No</button>
+      <button class="fpill" id="fp-pending" onclick="setFilter('pending')">Pending</button>
+    </div>
+    <div class="ghead">
+      <span>Name</span><span>Group</span><span style="text-align:center">RSVP</span><span></span>
+    </div>
+    <div id="guest-list"></div>
+    <div class="trow" style="margin-top:14px;">
+      <input class="ti" id="g-name" placeholder="Full name" onkeydown="if(event.key==='Enter')addGuest()">
+      <input class="ti" id="g-group" placeholder="Family / Friends" style="max-width:140px;">
+      <button class="btn" onclick="addGuest()">Add</button>
+    </div>
   </div>
 </section>
 
-<!-- ═══ WORK CAL ═══ -->
-<section class="sec" id="s-workcal">
-  <div class="sh"><div class="st">Work Calendar</div><div class="ss">Build your schedule as you settle in</div></div>
-  <div class="card">
-    <div class="ct">Add Work Event</div>
-    <div class="frow">
-      <div class="fg" style="flex:2;min-width:150px;"><label class="fl">Title</label><input class="fi" id="wc-title" placeholder="e.g. Team standup, 1:1…"></div>
-      <div class="fg"><label class="fl">Type</label><select class="fi" id="wc-type" onchange="toggleWCType()"><option value="once">One-off</option><option value="weekly">Weekly</option><option value="monthly">Monthly</option></select></div>
-    </div>
-    <div id="wc-once-row" class="frow">
-      <div class="fg"><label class="fl">Date</label><input class="fi" type="date" id="wc-date"></div>
-      <div class="fg"><label class="fl">Time (opt)</label><input class="fi" type="time" id="wc-time"></div>
-    </div>
-    <div id="wc-weekly-row" style="display:none;" class="frow">
-      <div class="fg"><label class="fl">Day of week</label><select class="fi" id="wc-wday"><option>Mon</option><option>Tue</option><option>Wed</option><option>Thu</option><option>Fri</option><option>Sat</option><option>Sun</option></select></div>
-      <div class="fg"><label class="fl">Time (opt)</label><input class="fi" type="time" id="wc-wtime"></div>
-    </div>
-    <div id="wc-monthly-row" style="display:none;" class="frow">
-      <div class="fg"><label class="fl">Day of month</label><select class="fi" id="wc-mday"><option value="1">1st</option><option value="2">2nd</option><option value="3">3rd</option><option value="4">4th</option><option value="5">5th</option><option value="6">6th</option><option value="7">7th</option><option value="8">8th</option><option value="9">9th</option><option value="10">10th</option><option value="11">11th</option><option value="12">12th</option><option value="13">13th</option><option value="14">14th</option><option value="15">15th</option><option value="16">16th</option><option value="17">17th</option><option value="18">18th</option><option value="19">19th</option><option value="20">20th</option><option value="21">21st</option><option value="22">22nd</option><option value="23">23rd</option><option value="24">24th</option><option value="25">25th</option><option value="26">26th</option><option value="27">27th</option><option value="28">28th</option><option value="29">29th</option><option value="30">30th</option><option value="31">31st</option></select></div>
-      <div class="fg"><label class="fl">Time (opt)</label><input class="fi" type="time" id="wc-mtime"></div>
-    </div>
-    <div class="frow">
-      <div class="fg" style="flex:2;"><label class="fl">Notes (opt)</label><input class="fi" id="wc-notes" placeholder="Location, link…"></div>
-      <div class="fg" style="justify-content:flex-end;"><label class="fl">&nbsp;</label><button class="btn" onclick="addWorkEvent()" style="width:100%">Add</button></div>
-    </div>
-  </div>
-  <div class="card"><div class="ct">This Week</div><div id="wc-week"></div></div>
-  <div class="card"><div class="ct">All Work Events</div><div id="wc-all"></div></div>
-</section>
+<!-- ═══ TO-DO LIST ═══ -->
+<section class="sec" id="s-todos">
+  <div class="page-title">To-Do List</div>
+  <div class="page-sub">Hold on mobile to rename · tap × to delete</div>
 
-<!-- ═══ REMINDERS ═══ -->
-<section class="sec" id="s-reminders">
-  <div class="sh"><div class="st">Reminders</div><div class="ss">Synced to week & month views</div></div>
   <div class="card">
-    <div class="ct">Once Off</div>
-    <div class="frow">
-      <div class="fg" style="flex:2;min-width:140px;"><label class="fl">Reminder</label><input class="fi" id="rm1-title" placeholder="e.g. Book physio, Pay rent…"></div>
-      <div class="fg"><label class="fl">Due Date</label><input class="fi" type="date" id="rm1-date"></div>
-      <div class="fg"><label class="fl">Time (opt)</label><input class="fi" type="time" id="rm1-time"></div>
-    </div>
-    <div class="frow">
-      <div class="fg" style="flex:2;"><label class="fl">Notes (opt)</label><input class="fi" id="rm1-notes" placeholder="Any detail…"></div>
-      <div class="fg" style="justify-content:flex-end;"><label class="fl">&nbsp;</label><button class="btn" onclick="addRemOnce()" style="width:100%">Add</button></div>
-    </div>
-    <div id="rm-once-list"></div>
+    <div class="ct">Progress</div>
+    <div id="todo-progress"></div>
   </div>
+
   <div class="card">
-    <div class="ct">Recurring</div>
+    <div class="inote">New tasks go to <strong>Current Priorities</strong> by default — you can also pick a category</div>
     <div class="frow">
-      <div class="fg" style="flex:2;min-width:140px;"><label class="fl">Reminder</label><input class="fi" id="rm2-title" placeholder="e.g. Weekly review, Call mum…"></div>
-      <div class="fg"><label class="fl">Frequency</label><select class="fi" id="rm2-freq" onchange="toggleRMFreq()"><option value="weekly">Weekly</option><option value="monthly">Monthly</option></select></div>
+      <div class="fg" style="flex:2;"><label class="fl">Task</label><input class="ti" id="wed-new-in" placeholder="Add a task…" onkeydown="if(event.key==='Enter')addWedTask()" style="width:100%;"></div>
+      <div class="fg"><label class="fl">Category</label>
+        <select class="cat-sel" id="wed-new-cat">
+          <option value="priority">⭐ Current Priorities</option>
+          <option value="travel">✈️ Travel & Accommodation</option>
+          <option value="activities">🎉 Wedding Activities</option>
+          <option value="guests">💌 Guest Communication</option>
+          <option value="venue">🏛️ Venue Coordination</option>
+          <option value="legal">⚖️ Legal</option>
+          <option value="personal">👗 Personal</option>
+        </select>
+      </div>
+      <div class="fg" style="justify-content:flex-end;"><label class="fl">&nbsp;</label><button class="btn" onclick="addWedTask()" style="width:100%">Add</button></div>
     </div>
-    <div id="rm2-weekly-row" class="frow">
-      <div class="fg"><label class="fl">Day of week</label><select class="fi" id="rm2-wday"><option>Mon</option><option>Tue</option><option>Wed</option><option>Thu</option><option>Fri</option><option>Sat</option><option>Sun</option></select></div>
-      <div class="fg"><label class="fl">Time (opt)</label><input class="fi" type="time" id="rm2-wtime"></div>
-    </div>
-    <div id="rm2-monthly-row" style="display:none;" class="frow">
-      <div class="fg"><label class="fl">Day of month</label><select class="fi" id="rm2-mday"><option value="1">1st</option><option value="2">2nd</option><option value="3">3rd</option><option value="4">4th</option><option value="5">5th</option><option value="6">6th</option><option value="7">7th</option><option value="8">8th</option><option value="9">9th</option><option value="10">10th</option><option value="11">11th</option><option value="12">12th</option><option value="13">13th</option><option value="14">14th</option><option value="15">15th</option><option value="16">16th</option><option value="17">17th</option><option value="18">18th</option><option value="19">19th</option><option value="20">20th</option><option value="21">21st</option><option value="22">22nd</option><option value="23">23rd</option><option value="24">24th</option><option value="25">25th</option><option value="26">26th</option><option value="27">27th</option><option value="28">28th</option><option value="29">29th</option><option value="30">30th</option><option value="31">31st</option></select></div>
-      <div class="fg"><label class="fl">Time (opt)</label><input class="fi" type="time" id="rm2-mtime"></div>
-    </div>
-    <div class="frow">
-      <div class="fg" style="flex:2;"><label class="fl">Notes (opt)</label><input class="fi" id="rm2-notes" placeholder="Any detail…"></div>
-      <div class="fg" style="justify-content:flex-end;"><label class="fl">&nbsp;</label><button class="btn" onclick="addRemRecurring()" style="width:100%">Add</button></div>
-    </div>
-    <div id="rm-rec-list"></div>
+
+    <div class="wsec"><span class="wdot" style="background:#f59e0b"></span>⭐ Current Priorities</div>
+    <div id="wed-priority"></div>
+    <div class="wsec"><span class="wdot" style="background:#8b5cf6"></span>✈️ Travel & Accommodation</div>
+    <div id="wed-travel"></div>
+    <div class="wsec"><span class="wdot" style="background:#f59e0b"></span>🎉 Wedding Activities</div>
+    <div id="wed-activities"></div>
+    <div class="wsec"><span class="wdot" style="background:#06b6d4"></span>💌 Guest Communication</div>
+    <div id="wed-guests"></div>
+    <div class="wsec"><span class="wdot" style="background:var(--pink)"></span>🏛️ Venue Coordination</div>
+    <div id="wed-venue"></div>
+    <div class="wsec"><span class="wdot" style="background:#ef4444"></span>⚖️ Legal</div>
+    <div id="wed-legal"></div>
+    <div class="wsec"><span class="wdot" style="background:#7a6b8a"></span>👗 Personal</div>
+    <div id="wed-personal"></div>
   </div>
 </section>
 
 <script>
-// ═══════════════════════════════════════════
+// ══════════════════════════════════════════
 // SUPABASE
-// ═══════════════════════════════════════════
-const SB = supabase.createClient(
-  'https://vgqngclfqrqawurfdngy.supabase.co',
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZncW5nY2xmcXJxYXd1cmZkbmd5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA2Mjc5NTUsImV4cCI6MjA5NjIwMzk1NX0.U8PyHjOigTyPDphk0v8cqCUo0JEJsK2RN5tgHRNRt0w'
-);
-let PIN = '';
-const S = {};
+// ══════════════════════════════════════════
+const SURL='https://vgqngclfqrqawurfdngy.supabase.co';
+const SKEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZncW5nY2xmcXJxYXd1cmZkbmd5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA2Mjc5NTUsImV4cCI6MjA5NjIwMzk1NX0.U8PyHjOigTyPDphk0v8cqCUo0JEJsK2RN5tgHRNRt0w';
+let SB,PIN='';
+const S={weddingTasks:null,guestList:null,budget:null};
 
-function syncStatus(s,msg){
-  const d=document.getElementById('sdot'),m=document.getElementById('sync-msg');
-  d.className='sdot '+s; m.textContent=msg;
+function syncStatus(cls,txt){
+  document.getElementById('sdot').className='sdot '+cls;
+  document.getElementById('sync-txt').textContent=txt;
 }
+
 async function dbGet(k){
-  try{const{data}=await SB.from('lifehq').select('value').eq('user_pin',PIN).eq('key',k).single();return data?data.value:null;}catch{return null;}
+  try{const{data,error}=await SB.from('lifehq').select('value').eq('user_pin',PIN).eq('key',k).single();if(error||!data)return null;return data.value;}catch{return null;}
 }
 async function dbSet(k,v){
-  try{await SB.from('lifehq').upsert({user_pin:PIN,key:k,value:v,updated_at:new Date().toISOString()});}catch(e){console.error(e);}
+  try{await SB.from('lifehq').upsert({user_pin:PIN,key:k,value:v,updated_at:new Date().toISOString()});}catch(e){console.warn('save err',e);}
 }
 async function save(k){syncStatus('saving','Saving…');await dbSet(k,S[k]);syncStatus('ok','Synced ✓');}
 
-// ═══════════════════════════════════════════
-// PIN
-// ═══════════════════════════════════════════
+// ══════════════════════════════════════════
+// PIN + INIT
+// ══════════════════════════════════════════
 async function pinSubmit(){
-  const v=document.getElementById('pin-in').value;
-  if(v.length!==4||!/^\d{4}$/.test(v)){document.getElementById('pin-err').textContent='Please enter exactly 4 digits';return;}
+  const v=document.getElementById('pin-in').value.trim();
+  if(v.length<4){document.getElementById('pin-err').textContent='Enter a 4-digit PIN';return;}
+  syncStatus('saving','Connecting…');
   PIN=v;
-  document.getElementById('pin-err').textContent='Loading your data…';
-  await loadAll();
-  document.getElementById('pin-screen').classList.add('hidden');
-  document.getElementById('main-nav').style.display='flex';
-  document.getElementById('sync-bar').style.display='flex';
-  renderAll();
+  try{
+    await loadAll();
+    document.getElementById('pin-screen').classList.add('hidden');
+    renderAll();
+    syncStatus('ok','Synced ✓');
+  }catch(e){
+    document.getElementById('pin-err').textContent='Connection error — check your internet';
+    syncStatus('err','Error');
+  }
 }
+document.getElementById('pin-in').addEventListener('keydown',e=>{if(e.key==='Enter')pinSubmit();});
 
-// ═══════════════════════════════════════════
-// LOAD
-// ═══════════════════════════════════════════
 async function loadAll(){
-  const keys=['weekTodos','gymSchedule','gymNotes','gymLabels','weightLog','vapeDays','cravings',
-    'weddingTasks','guestList','jobNotes','jobPrestart','jobGoals','meals','prepList',
-    'workEvents','reminders','monthEvents','measurements','recipes','budget'];
+  SB=supabase.createClient(SURL,SKEY);
+  const keys=['weddingTasks','guestList','budget'];
   const res=await Promise.all(keys.map(k=>dbGet(k)));
   keys.forEach((k,i)=>{S[k]=res[i];});
-  if(!S.weekTodos)S.weekTodos=[];
-  if(!S.gymSchedule)S.gymSchedule={};
-  if(!S.gymNotes)S.gymNotes=[];
-  if(!S.gymLabels)S.gymLabels=defaultGymLabels();
-  if(!S.weightLog)S.weightLog=[{date:'01/05/2025',val:67},{date:'31/05/2025',val:64.9}];
-  if(!S.vapeDays)S.vapeDays={};
-  if(!S.cravings)S.cravings=[];
-  if(!S.weddingTasks)S.weddingTasks=defaultWedding();
-  if(!S.guestList)S.guestList=defaultGuests();
-  if(!S.jobNotes)S.jobNotes=[];
-  if(!S.jobPrestart)S.jobPrestart=defaultJobPrestart();
-  if(!S.jobGoals)S.jobGoals=[];
-  if(!S.meals)S.meals={la:'',lb:'',da:'',db:''};
-  if(!S.prepList)S.prepList=defaultPrep();
-  if(!S.workEvents)S.workEvents=[];
-  if(!S.reminders)S.reminders=[];
-  if(!S.monthEvents)S.monthEvents=[];
-  if(!S.measurements)S.measurements=[];
-  if(!S.recipes)S.recipes=[];
-  if(!S.budget)S.budget=defaultBudget();
-  syncStatus('ok','Synced ✓');
+  if(!S.weddingTasks||typeof S.weddingTasks!=='object'||Array.isArray(S.weddingTasks))S.weddingTasks=defaultWedding();
+  if(!S.guestList||!Array.isArray(S.guestList))S.guestList=defaultGuests();
+  if(!S.budget||!Array.isArray(S.budget))S.budget=defaultBudget();
 }
 
-// ═══════════════════════════════════════════
+// ══════════════════════════════════════════
 // NAV
-// ═══════════════════════════════════════════
+// ══════════════════════════════════════════
 function goTo(id){
   document.querySelectorAll('.sec').forEach(s=>s.classList.remove('active'));
   document.querySelectorAll('.nb').forEach(b=>b.classList.remove('active'));
@@ -699,477 +336,42 @@ function goTo(id){
   document.getElementById('nb-'+id).classList.add('active');
 }
 
-// ═══════════════════════════════════════════
-// HELPERS
-// ═══════════════════════════════════════════
-const DAYS=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
-const MN=['January','February','March','April','May','June','July','August','September','October','November','December'];
-const MNS=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-const CAT_EMOJI={birthday:'🎂',anniversary:'💍',appointment:'📋',social:'🥂',deadline:'⚡',other:'📌'};
-const CAT_CHIP={birthday:'chip-b',anniversary:'chip-a',appointment:'chip-ap',social:'chip-s',deadline:'chip-dl',other:'chip-o'};
-
-function fmtDate(d){if(!d)return'';const dt=new Date(d+'T00:00:00');return dt.toLocaleDateString('en-AU',{day:'numeric',month:'short',year:'numeric'});}
-function fmtTime(t){if(!t)return'';const[h,m]=t.split(':');const hr=parseInt(h);return`${hr%12||12}:${m}${hr>=12?'pm':'am'}`;}
-function ordinal(n){const s=['th','st','nd','rd'];const v=n%100;return n+(s[(v-20)%10]||s[v]||s[0]);}
-function fmtEvMeta(e){
-  if(e.type==='once')return e.date?fmtDate(e.date)+(e.time?' · '+fmtTime(e.time):''):'No date';
-  if(e.type==='weekly')return`Every ${e.weekday}`+(e.time?' · '+fmtTime(e.time):'');
-  if(e.type==='monthly')return`${ordinal(e.monthday)} of each month`+(e.time?' · '+fmtTime(e.time):'');
-  return'';
-}
-function getMonday(){
-  const n=new Date();const dow=n.getDay();const off=dow===0?-6:1-dow;
-  const m=new Date(n);m.setDate(n.getDate()+off);m.setHours(0,0,0,0);return m;
-}
-function weekKey(){const m=getMonday();return m.toISOString().slice(0,10);}
-function eventOnDay(e,dayName,dayNum,dayDate){
-  if(e.type==='weekly')return e.weekday===dayName;
-  if(e.type==='monthly')return e.monthday===dayNum;
-  if(e.type==='once'&&e.date){const ed=new Date(e.date+'T00:00:00');return ed.toDateString()===dayDate.toDateString();}
-  return false;
-}
-function monthEventOnDay(e,dayNum,dayDate){
-  if(e.repeat==='yes')return parseInt(e.month)===dayDate.getMonth()+1&&parseInt(e.day)===dayNum;
-  if(e.date){const ed=new Date(e.date+'T00:00:00');return ed.toDateString()===dayDate.toDateString();}
-  return false;
-}
-function makeTodo(t,i,key,cb){
-  const row=document.createElement('div');row.className='titem';row.style.animation='fadeIn .2s ease';
-  const chk=document.createElement('div');chk.className='tck'+(t.done?' done':'');
-  chk.onclick=async()=>{S[key][i].done=!S[key][i].done;if(cb)cb();else renderByKey(key);await save(key);renderWeekSnap();};
-  const tx=document.createElement('div');tx.className='ttx'+(t.done?' done':'');tx.textContent=t.text;
-  const del=document.createElement('button');del.className='tdel';del.textContent='×';
-  del.onclick=async()=>{S[key].splice(i,1);if(cb)cb();else renderByKey(key);await save(key);};
-  row.append(chk,tx,del);return row;
-}
-function renderByKey(k){
-  const map={weekTodos:renderWeekTodos,prepList:renderPrepList,jobGoals:renderJobGoals};
-  if(map[k])map[k]();
-}
-function emptyMsg(msg){const d=document.createElement('div');d.style.cssText='color:var(--muted);font-size:.82rem;padding:8px 0;';d.textContent=msg;return d;}
-
-// ═══════════════════════════════════════════
-// WEEK
-// ═══════════════════════════════════════════
-function renderWeek(){
-  const monday=getMonday();
-  const sunday=new Date(monday);sunday.setDate(monday.getDate()+6);
-  document.getElementById('week-range').textContent=
-    monday.toLocaleDateString('en-AU',{day:'numeric',month:'short'})+' – '+
-    sunday.toLocaleDateString('en-AU',{day:'numeric',month:'short',year:'numeric'});
-  const sched=S.gymSchedule[weekKey()]||{};
-  const labels=S.gymLabels||defaultGymLabels();
-  const today=new Date();const todayIdx=today.getDay()===0?6:today.getDay()-1;
-  const grid=document.getElementById('week-grid');grid.innerHTML='';
-  DAYS.forEach((d,i)=>{
-    const dayDate=new Date(monday);dayDate.setDate(monday.getDate()+i);
-    const dayNum=dayDate.getDate();
-    const col=document.createElement('div');col.className='dcol'+(i===todayIdx?' today':'');
-    const lbl=document.createElement('div');lbl.className='dlbl';lbl.textContent=d+' '+dayNum;col.appendChild(lbl);
-    if(i===6){const t=document.createElement('div');t.className='dtag prep';t.textContent='🥗 Prep';col.appendChild(t);}
-    const gs=sched[d];
-    if(gs){const gl=labels.find(l=>l.key===gs);const t=document.createElement('div');t.className='dtag gym';t.textContent=(gl?gl.icon:'💪')+' '+(gl?gl.name:gs).slice(0,7);col.appendChild(t);}
-    S.workEvents.forEach(e=>{if(eventOnDay(e,d,dayNum,dayDate)){const t=document.createElement('div');t.className='dtag work';t.textContent='💼 '+e.title.slice(0,8);col.appendChild(t);}});
-    S.reminders.forEach(r=>{if(eventOnDay(r,d,dayNum,dayDate)){const t=document.createElement('div');t.className='dtag remind';t.textContent='🔔 '+r.title.slice(0,8);col.appendChild(t);}});
-    S.monthEvents.forEach(e=>{if(monthEventOnDay(e,dayNum,dayDate)){const t=document.createElement('div');t.className='dtag event';t.textContent=(CAT_EMOJI[e.cat]||'📌')+' '+e.title.slice(0,7);col.appendChild(t);}});
-    grid.appendChild(col);
-  });
-  renderWeekTodos();renderWeekSnap();
-}
-function renderWeekTodos(){
-  const el=document.getElementById('week-todos');el.innerHTML='';
-  // User todos
-  if(S.weekTodos.length)S.weekTodos.forEach((t,i)=>el.appendChild(makeTodo(t,i,'weekTodos')));
-  // Due today from reminders
-  const today=new Date();const dayName=DAYS[today.getDay()===0?6:today.getDay()-1];const dayNum=today.getDate();
-  const dueToday=[];
-  S.reminders.filter(r=>r.type==='once'&&r.date).forEach(r=>{const rd=new Date(r.date+'T00:00:00');if(rd.toDateString()===today.toDateString())dueToday.push('🔔 '+r.title);});
-  S.reminders.filter(r=>r.type==='weekly').forEach(r=>{if(r.weekday===dayName)dueToday.push('🔔 '+r.title);});
-  S.reminders.filter(r=>r.type==='monthly').forEach(r=>{if(r.monthday===dayNum)dueToday.push('🔔 '+r.title);});
-  S.monthEvents.forEach(e=>{if(monthEventOnDay(e,dayNum,today))dueToday.push((CAT_EMOJI[e.cat]||'📌')+' '+e.title);});
-  if(dueToday.length){
-    const hdr=document.createElement('div');hdr.style.cssText='font-size:.6rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-top:10px;margin-bottom:6px;';hdr.textContent='Due Today';el.appendChild(hdr);
-    dueToday.forEach(txt=>{const d=document.createElement('div');d.style.cssText='font-size:.84rem;padding:5px 0;border-bottom:1px solid var(--border);color:var(--muted);';d.textContent=txt;el.appendChild(d);});
-  }
-  if(!S.weekTodos.length&&!dueToday.length)el.appendChild(emptyMsg('No tasks yet — add something above'));
-}
-async function addWeekTodo(){
-  const inp=document.getElementById('wtodo-in');const v=inp.value.trim();if(!v)return;
-  S.weekTodos.push({text:v,done:false});inp.value='';renderWeekTodos();await save('weekTodos');
-}
-function renderWeekSnap(){
-  const today=new Date();const yr=today.getFullYear();const mo=today.getMonth();
-  const dim=new Date(yr,mo+1,0).getDate();
-  let clean=0;
-  for(let d=1;d<=dim;d++){const k=`${yr}-${String(mo+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;if(S.vapeDays[k]==='clean')clean++;}
-  const latest=S.weightLog.at(-1)?.val||64.9;
-  const wpct=Math.min(100,((67-latest)/(67-63)*100)).toFixed(1);
-  const wt=S.weddingTasks||defaultWedding();
-  const all=Object.values(wt).flat();const done=all.filter(t=>t.done).length;
-  const wpctW=all.length?(done/all.length*100).toFixed(0):0;
-  const snap=document.getElementById('week-snap');
-  snap.innerHTML=`
-    <div class="pw"><div class="prow"><span>🚭 Vape-free ${MNS[mo]}</span><span>${clean}/${dim}</span></div><div class="pbar"><div class="pfill" style="background:var(--blue);width:${(clean/dim*100).toFixed(1)}%"></div></div></div>
-    <div class="pw"><div class="prow"><span>⚖️ Weight ${latest}kg → 63kg</span><span>${wpct}%</span></div><div class="pbar"><div class="pfill" style="background:var(--green);width:${wpct}%"></div></div></div>
-    <div class="pw"><div class="prow"><span>💍 Wedding tasks</span><span>${done}/${all.length}</span></div><div class="pbar"><div class="pfill" style="background:var(--pink);width:${wpctW}%"></div></div></div>`;
+// ══════════════════════════════════════════
+// OVERVIEW — COUNTDOWN + BUDGET
+// ══════════════════════════════════════════
+function renderOverview(){
+  const wed=new Date(2027,4,1);
+  const today=new Date();today.setHours(0,0,0,0);
+  const diff=Math.ceil((wed-today)/(1000*60*60*24));
+  document.getElementById('countdown-n').textContent=diff;
+  document.getElementById('countdown-date').textContent='Friday 1 May 2027';
+  renderBudget();
 }
 
-// ═══════════════════════════════════════════
-// MONTH CALENDAR
-// ═══════════════════════════════════════════
-let calY=new Date().getFullYear(),calM=new Date().getMonth();
-function changeMonth(dir){calM+=dir;if(calM>11){calM=0;calY++;}if(calM<0){calM=11;calY--;}renderMonth();}
-function getEventsForDay(yr,mo,d){
-  const dayDate=new Date(yr,mo,d);const dow=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][dayDate.getDay()];
-  const evts=[];
-  S.monthEvents.forEach(e=>{if(monthEventOnDay(e,d,dayDate))evts.push({label:(CAT_EMOJI[e.cat]||'📌')+' '+e.title,cls:CAT_CHIP[e.cat]||'chip-o'});});
-  S.workEvents.forEach(e=>{
-    let show=false;
-    if(e.type==='once'&&e.date){const ed=new Date(e.date+'T00:00:00');show=ed.toDateString()===dayDate.toDateString();}
-    if(e.type==='weekly')show=e.weekday===dow;
-    if(e.type==='monthly')show=e.monthday===d;
-    if(show)evts.push({label:'💼 '+e.title,cls:'chip-w'});
-  });
-  S.reminders.forEach(r=>{
-    let show=false;
-    if(r.type==='once'&&r.date){const rd=new Date(r.date+'T00:00:00');show=rd.toDateString()===dayDate.toDateString();}
-    if(r.type==='weekly')show=r.weekday===dow;
-    if(r.type==='monthly')show=r.monthday===d;
-    if(show)evts.push({label:'🔔 '+r.title,cls:'chip-r'});
-  });
-  return evts;
-}
-function renderMonth(){
-  const today=new Date();
-  document.getElementById('month-title').textContent=MN[calM]+' '+calY;
-  document.getElementById('month-nav-lbl').textContent=MN[calM]+' '+calY;
-  const grid=document.getElementById('month-grid');grid.innerHTML='';
-  const dim=new Date(calY,calM+1,0).getDate();
-  const firstDow=new Date(calY,calM,1).getDay();
-  const blanks=firstDow===0?6:firstDow-1;
-  for(let b=0;b<blanks;b++){const c=document.createElement('div');c.className='mcell other';c.innerHTML=`<div class="mcell-d">${new Date(calY,calM,0-blanks+b+1).getDate()}</div>`;grid.appendChild(c);}
-  for(let d=1;d<=dim;d++){
-    const isToday=today.getFullYear()===calY&&today.getMonth()===calM&&today.getDate()===d;
-    const c=document.createElement('div');c.className='mcell'+(isToday?' today':'');
-    const evts=getEventsForDay(calY,calM,d);
-    c.innerHTML=`<div class="mcell-d">${d}</div>${evts.slice(0,3).map(e=>`<span class="chip ${e.cls}">${e.label}</span>`).join('')}${evts.length>3?`<span style="font-size:.46rem;color:var(--muted)">+${evts.length-3}</span>`:''}`;
-    grid.appendChild(c);
-  }
-  renderMonthEventList();
-}
-function renderMonthEventList(){
-  const el=document.getElementById('month-event-list');el.innerHTML='';
-  if(!S.monthEvents.length){el.appendChild(emptyMsg('No events yet'));return;}
-  [...S.monthEvents].sort((a,b)=>{
-    const da=a.repeat==='yes'?`0000-${String(a.month||1).padStart(2,'0')}-${String(a.day||1).padStart(2,'0')}`:a.date||'';
-    const db=b.repeat==='yes'?`0000-${String(b.month||1).padStart(2,'0')}-${String(b.day||1).padStart(2,'0')}`:b.date||'';
-    return da.localeCompare(db);
-  }).forEach(e=>{
-    const row=document.createElement('div');row.className='merow';
-    const cat=document.createElement('div');
-    cat.className=`mecat ${CAT_CHIP[e.cat]||'chip-o'}`;
-    cat.textContent=`${CAT_EMOJI[e.cat]||'📌'} ${e.cat}`;
-    const info=document.createElement('div');info.style.flex='1';
-    const ds=e.repeat==='yes'?`Every year — ${MN[(parseInt(e.month||1)-1)]} ${e.day}`:(e.date?fmtDate(e.date):'');
-    const ts=e.time?' · '+fmtTime(e.time):'';const ns=e.notes?' · '+e.notes:'';
-    info.innerHTML=`<div style="font-weight:600;font-size:.86rem;">${e.title}</div><div style="font-size:.7rem;color:var(--muted);">${ds}${ts}${ns}</div>`;
-    const del=document.createElement('button');del.className='medel';del.textContent='×';
-    del.onclick=async()=>{S.monthEvents=S.monthEvents.filter(x=>x.id!==e.id);renderMonth();renderWeek();await save('monthEvents');};
-    row.append(cat,info,del);el.appendChild(row);
-  });
-}
-async function addMonthEvent(){
-  const title=document.getElementById('me-title').value.trim();if(!title)return;
-  const date=document.getElementById('me-date').value;
-  const time=document.getElementById('me-time').value;
-  const cat=document.getElementById('me-cat').value;
-  const repeat=document.getElementById('me-repeat').value;
-  const notes=document.getElementById('me-notes').value.trim();
-  const e={id:Date.now(),title,cat,repeat,time,notes};
-  if(repeat==='yes'&&date){const d=new Date(date+'T00:00:00');e.month=d.getMonth()+1;e.day=d.getDate();}
-  else e.date=date;
-  S.monthEvents.push(e);
-  ['me-title','me-date','me-time','me-notes'].forEach(id=>document.getElementById(id).value='');
-  renderMonth();renderWeek();await save('monthEvents');
-}
-
-// ═══════════════════════════════════════════
-// GYM
-// ═══════════════════════════════════════════
-function defaultGymLabels(){return[
-  {key:'glute',name:'Glutes',icon:'🍑',detail:'Stair + glutes'},
-  {key:'upper',name:'Upper Body',icon:'💪',detail:'Stair + upper'},
-  {key:'quad',name:'Quads',icon:'🦵',detail:'Stair + quads'},
-  {key:'flex',name:'Flex Day',icon:'✨',detail:'Whatever feels good'},
-];}
-let _spDay='';
-function openSP(day){_spDay=day;document.getElementById('sp-title').textContent=day;const el=document.getElementById('sp-opts');el.innerHTML='';
-  (S.gymLabels||defaultGymLabels()).forEach(g=>{
-    const o=document.createElement('div');o.className='sp-opt';
-    o.innerHTML=`<div class="sp-opt-icon">${g.icon}</div><div><div class="sp-opt-name">${g.name}</div><div class="sp-opt-detail">${g.detail}</div></div>`;
-    o.onclick=()=>assignSession(g.key);el.appendChild(o);
-  });
-  document.getElementById('sp-modal').classList.add('open');
-}
-function closeSP(){document.getElementById('sp-modal').classList.remove('open');}
-async function assignSession(k){
-  const wk=weekKey();if(!S.gymSchedule[wk])S.gymSchedule[wk]={};
-  S.gymSchedule[wk][_spDay]=k;closeSP();renderGym();renderWeek();await save('gymSchedule');
-}
-async function clearGymDay(){
-  const wk=weekKey();if(S.gymSchedule[wk])delete S.gymSchedule[wk][_spDay];
-  closeSP();renderGym();renderWeek();await save('gymSchedule');
-}
-function renderGym(){
-  const sched=S.gymSchedule[weekKey()]||{};
-  const labels=S.gymLabels||defaultGymLabels();
-  const grid=document.getElementById('gym-grid');grid.innerHTML='';
-  DAYS.forEach(d=>{
-    const wrap=document.createElement('div');wrap.className='gslot';
-    const lbl=document.createElement('div');lbl.className='gslot-lbl';lbl.textContent=d;
-    const slot=document.createElement('div');
-    const sk=sched[d];const gl=sk?labels.find(l=>l.key===sk):null;
-    slot.className='gday'+(gl?' has':'');
-    slot.innerHTML=gl?`<div class="gday-icon">${gl.icon}</div><div class="gday-name">${gl.name}</div>`:`<div style="font-size:.6rem;color:var(--muted)">+</div>`;
-    slot.onclick=()=>openSP(d);
-    wrap.append(lbl,slot);grid.appendChild(wrap);
-  });
-  const count=Object.keys(sched).filter(d=>sched[d]&&sched[d]!=='flex').length;
-  document.getElementById('gym-count').textContent=count+' / 3';
-  renderGymNotes();
-}
-function toggleGymEdit(){
-  const p=document.getElementById('gym-edit-panel');
-  const visible=p.style.display!=='none';
-  if(visible){p.style.display='none';return;}
-  p.style.display='block';
-  const labels=S.gymLabels||defaultGymLabels();
-  const c=document.getElementById('gym-edit-inputs');c.innerHTML='';
-  labels.forEach(g=>{
-    const row=document.createElement('div');row.style.cssText='display:flex;gap:8px;align-items:center;';
-    row.innerHTML=`<span style="font-size:1.1rem;width:26px;text-align:center;">${g.icon}</span>
-      <input class="fi" style="flex:1;" data-key="${g.key}" data-field="name" value="${g.name}" placeholder="Session name">
-      <input class="fi" style="flex:1;" data-key="${g.key}" data-field="detail" value="${g.detail}" placeholder="Detail">`;
-    c.appendChild(row);
-  });
-}
-async function saveGymLabels(){
-  const labels=S.gymLabels||defaultGymLabels();
-  document.querySelectorAll('#gym-edit-inputs input').forEach(inp=>{
-    const k=inp.dataset.key,f=inp.dataset.field;
-    const l=labels.find(x=>x.key===k);if(l)l[f]=inp.value;
-  });
-  S.gymLabels=labels;document.getElementById('gym-edit-panel').style.display='none';
-  renderGym();await save('gymLabels');
-}
-function renderGymNotes(){
-  const el=document.getElementById('gym-notes');el.innerHTML='';
-  if(!S.gymNotes.length){el.appendChild(emptyMsg('No notes yet'));return;}
-  S.gymNotes.slice(0,8).forEach(n=>{const d=document.createElement('div');d.style.cssText='font-size:.8rem;padding:5px 0;border-bottom:1px solid var(--border);';d.innerHTML=`<span style="color:var(--muted);font-size:.72rem;">${n.date}: </span>${n.text}`;el.appendChild(d);});
-}
-async function addGymNote(){
-  const inp=document.getElementById('gym-note-in');const v=inp.value.trim();if(!v)return;
-  S.gymNotes.unshift({date:new Date().toLocaleDateString('en-AU'),text:v});inp.value='';
-  renderGymNotes();await save('gymNotes');
-}
-
-// ═══════════════════════════════════════════
-// NUTRITION
-// ═══════════════════════════════════════════
-function renderNutrition(){
-  const latest=S.weightLog.at(-1)?.val||64.9;
-  document.getElementById('cur-weight').textContent=latest;
-  const pct=Math.min(100,((67-latest)/(67-63)*100));
-  document.getElementById('wbar').style.width=pct+'%';
-  document.getElementById('wpct-lbl').textContent=pct.toFixed(1)+'%';
-  const log=document.getElementById('wlog');log.innerHTML='';
-  [...S.weightLog].reverse().slice(0,8).forEach((e,i,arr)=>{
-    const prev=arr[i+1];const delta=prev?(e.val-prev.val).toFixed(1):null;
-    const row=document.createElement('div');row.className='wentry';
-    row.innerHTML=`<span class="wdate">${e.date}</span><span style="font-weight:600">${e.val} kg</span><span style="font-size:.74rem;color:${delta===null?'var(--muted)':delta>0?'var(--neg)':'var(--pos)'}">${delta===null?'—':delta>0?'+'+delta:delta}</span>`;
-    log.appendChild(row);
-  });
-  renderMeasurements();
-  document.getElementById('meal-la').value=S.meals.la||'';
-  document.getElementById('meal-lb').value=S.meals.lb||'';
-  document.getElementById('meal-da').value=S.meals.da||'';
-  document.getElementById('meal-db').value=S.meals.db||'';
-  renderRecipes();renderPrepList();
-}
-async function logWeight(){
-  const v=parseFloat(document.getElementById('w-in').value);if(isNaN(v))return;
-  S.weightLog.push({date:new Date().toLocaleDateString('en-AU'),val:v});
-  document.getElementById('w-in').value='';
-  renderNutrition();renderWeekSnap();await save('weightLog');
-}
-async function saveMeals(){
-  S.meals.la=document.getElementById('meal-la').value;S.meals.lb=document.getElementById('meal-lb').value;
-  S.meals.da=document.getElementById('meal-da').value;S.meals.db=document.getElementById('meal-db').value;
-  await save('meals');
-}
-function renderMeasurements(){
-  const l=S.measurements.at(-1);
-  document.getElementById('m-waist').textContent=l?.waist?l.waist+'"':'—';
-  document.getElementById('m-hips').textContent=l?.hips?l.hips+'"':'—';
-  document.getElementById('m-glutes').textContent=l?.glutes?l.glutes+'"':'—';
-  const el=document.getElementById('meas-log');el.innerHTML='';
-  if(!S.measurements.length){el.appendChild(emptyMsg('No measurements yet'));return;}
-  const hdr=document.createElement('div');hdr.className='mhdr';
-  hdr.innerHTML='<span>Date</span><span>Waist</span><span>Hips</span><span>Glutes</span>';el.appendChild(hdr);
-  [...S.measurements].reverse().slice(0,10).forEach((m,i,arr)=>{
-    const prev=arr[i+1];
-    const row=document.createElement('div');row.className='mentry';
-    const d=(field)=>{if(!prev||!prev[field]||!m[field])return'—';const v=(parseFloat(m[field])-parseFloat(prev[field])).toFixed(1);return`<span style="color:${v>0?'var(--neg)':'var(--pos)'}">${v>0?'+'+v:v}</span>`;};
-    row.innerHTML=`<span style="color:var(--muted);font-size:.72rem;">${m.date}</span><span class="mval">${m.waist||'—'}"</span><span class="mval">${m.hips||'—'}"</span><span class="mval">${m.glutes||'—'}"</span>`;
-    el.appendChild(row);
-  });
-}
-async function logMeas(){
-  const w=document.getElementById('in-waist').value;const h=document.getElementById('in-hips').value;const g=document.getElementById('in-glutes').value;
-  if(!w&&!h&&!g)return;
-  S.measurements.push({date:new Date().toLocaleDateString('en-AU'),waist:w,hips:h,glutes:g});
-  ['in-waist','in-hips','in-glutes'].forEach(id=>document.getElementById(id).value='');
-  renderMeasurements();await save('measurements');
-}
-function renderRecipes(){
-  const el=document.getElementById('recipe-list');el.innerHTML='';
-  if(!S.recipes.length){el.appendChild(emptyMsg('No recipes yet — add one above'));return;}
-  S.recipes.forEach(r=>{
-    const row=document.createElement('div');row.className='rec-item';
-    const a=document.createElement('a');a.href=r.url;a.target='_blank';a.rel='noopener noreferrer';a.className='rec-link';
-    a.innerHTML=`<div class="rec-name">🔗 ${r.name}</div><div class="rec-url">${r.url}</div>`;
-    const del=document.createElement('button');del.className='rec-del';del.textContent='×';
-    del.onclick=async(e)=>{e.preventDefault();S.recipes=S.recipes.filter(x=>x.id!==r.id);renderRecipes();await save('recipes');};
-    row.append(a,del);el.appendChild(row);
-  });
-}
-async function saveRecipe(){
-  const name=document.getElementById('rec-name').value.trim();const url=document.getElementById('rec-url').value.trim();if(!name||!url)return;
-  S.recipes.push({id:Date.now(),name,url});
-  document.getElementById('rec-name').value='';document.getElementById('rec-url').value='';
-  renderRecipes();await save('recipes');
-}
-function defaultPrep(){return[
-  {text:'Plan meals for the week',done:false},{text:'Write shopping list',done:false},{text:'Grocery shop',done:false},
-  {text:'Marinate chicken',done:false},{text:'Cook Lunch A ×4 servings',done:false},{text:'Cook Lunch B ×4 servings',done:false},
-  {text:'Prep Dinner A components',done:false},{text:'Prep Dinner B components',done:false},{text:'Portion & store all meals',done:false},
-];}
-function renderPrepList(){
-  const el=document.getElementById('prep-list');el.innerHTML='';
-  S.prepList.forEach((t,i)=>el.appendChild(makeTodo(t,i,'prepList')));
-}
-async function addPrepItem(){
-  const inp=document.getElementById('prep-in');const v=inp.value.trim();if(!v)return;
-  S.prepList.push({text:v,done:false});inp.value='';renderPrepList();await save('prepList');
-}
-
-// ═══════════════════════════════════════════
-// VAPING
-// ═══════════════════════════════════════════
-function renderVaping(){
-  const today=new Date();const yr=today.getFullYear();const mo=today.getMonth();
-  const dim=new Date(yr,mo+1,0).getDate();
-  document.getElementById('vape-sub').textContent=`${MN[mo]} ${yr} · patches · you've got this`;
-  document.getElementById('vape-cal-ct').textContent=`${MN[mo]} — tap each day to mark it`;
-  const firstDow=new Date(yr,mo,1).getDay();const blanks=firstDow===0?6:firstDow-1;
-  const cal=document.getElementById('vape-cal');cal.innerHTML='';
-  for(let b=0;b<blanks;b++){const x=document.createElement('div');x.className='vday future';cal.appendChild(x);}
-  for(let d=1;d<=dim;d++){
-    const key=`${yr}-${String(mo+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
-    const cellDate=new Date(yr,mo,d);
-    const isToday=today.getDate()===d;const isFuture=cellDate>today;
-    const status=S.vapeDays[key];
-    const cell=document.createElement('div');
-    cell.className='vday'+(isToday?' tod':'')+(isFuture&&!status?' future':'');
-    if(status==='clean')cell.classList.add('clean');
-    if(status==='slip')cell.classList.add('slip');
-    cell.textContent=d;
-    if(!isFuture||status)cell.onclick=()=>cycleVapeDay(key);
-    cal.appendChild(cell);
-  }
-  let clean=0;
-  for(let d=1;d<=dim;d++){const k=`${yr}-${String(mo+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;if(S.vapeDays[k]==='clean')clean++;}
-  document.getElementById('streak-n').textContent=clean;
-  document.getElementById('streak-l').textContent=`Days Clean in ${MN[mo]}`;
-  renderCravings();
-}
-async function cycleVapeDay(key){
-  const cur=S.vapeDays[key];
-  if(!cur)S.vapeDays[key]='clean';else if(cur==='clean')S.vapeDays[key]='slip';else delete S.vapeDays[key];
-  renderVaping();renderWeekSnap();await save('vapeDays');
-}
-function renderCravings(){
-  const el=document.getElementById('craving-log');el.innerHTML='';
-  if(!S.cravings.length){el.appendChild(emptyMsg('No cravings logged yet'));return;}
-  S.cravings.slice(0,10).forEach(c=>{const d=document.createElement('div');d.style.cssText='padding:6px 0;border-bottom:1px solid var(--border);font-size:.82rem;';d.innerHTML=`<span style="color:var(--muted);font-size:.7rem;">${c.date} ${c.time}: </span>${c.text}`;el.appendChild(d);});
-}
-async function addCraving(){
-  const inp=document.getElementById('craving-in');const v=inp.value.trim();if(!v)return;
-  S.cravings.unshift({date:new Date().toLocaleDateString('en-AU'),time:new Date().toLocaleTimeString('en-AU',{hour:'2-digit',minute:'2-digit'}),text:v});
-  inp.value='';renderCravings();await save('cravings');
-}
-
-// ═══════════════════════════════════════════
-// WEDDING
-// ═══════════════════════════════════════════
-function defaultWedding(){return{
-  priority:[{text:'Finish invitations in Canva',done:false},{text:'Send invitations (10 months out)',done:false},{text:'Organise resort family accommodation',done:false}],
-  travel:[{text:'Book flights (US guests)',done:false},{text:'Book transport shuttles (US)',done:false},{text:'Organise resort family accommodation',done:false},{text:'Organise transport shuttles (guests)',done:true},{text:'Book honeymoon accommodation — Ibah',done:true}],
-  activities:[{text:'Plan speeches',done:false},{text:'Organise cameras for guests',done:false},{text:'Night before drinks — book restaurant',done:false},{text:'Post-wedding recovery — organise & book',done:false},{text:'Create guest itinerary',done:false},{text:'Book transport from venue to Ibah',done:false},{text:'Email itinerary 1 month before & update website',done:false}],
-  guests:[{text:'Confirm guest contact info',done:true},{text:'Create Save the Date in Canva',done:true},{text:'Send Save the Dates',done:true},{text:'Create invitations in Canva',done:false},{text:'Create wedding website',done:false},{text:'Send invitations (at least 10 months out)',done:false},{text:'Confirm final numbers (at least 8 months out)',done:false},{text:'Confirm post-wedding plans with friends & family',done:false}],
-  venue:[{text:'Book venue and pay deposit',done:true},{text:'Organise girls getting ready location',done:false},{text:'Finalise wedding package (menu, flowers, photography)',done:false},{text:'Finalise timeline for the day',done:false},{text:'Make final payment for venue',done:false}],
-  legal:[{text:'Select & book Adelaide celebrant (near Seacliff)',done:false},{text:'Gather birth certificates / passports for NOIM',done:false},{text:'Lodge NOIM in Adelaide (at least 1 month before signing)',done:false},{text:'Perform legal signing in Adelaide with two witnesses',done:false},{text:'Ensure Marriage Certificate received for name changes',done:false}],
-  personal:[{text:'Wedding dress & shoes',done:false},{text:"Tom's suit & shoes",done:false},{text:'Dog / house sitter',done:false},{text:'Hair and makeup (TBC via venue)',done:false}],
-};}
-function renderWedding(){
-  const diff=Math.ceil((new Date(2027,4,1)-new Date())/(1000*60*60*24));
-  document.getElementById('wed-days').textContent=diff;
-  ['priority','travel','activities','guests','venue','legal','personal'].forEach(k=>renderWedSection(k));
-  renderBudget();renderGuests();
-}
-function renderWedSection(k){
-  const el=document.getElementById('wed-'+k);if(!el)return;el.innerHTML='';
-  (S.weddingTasks[k]||[]).forEach((t,i)=>{
-    const row=document.createElement('div');row.className='witem';
-    const chk=document.createElement('div');chk.className='tck'+(t.done?' done':'');
-    chk.onclick=async()=>{S.weddingTasks[k][i].done=!S.weddingTasks[k][i].done;renderWedSection(k);renderWeekSnap();await save('weddingTasks');};
-    const tx=document.createElement('div');tx.className='ttx'+(t.done?' done':'');tx.textContent=t.text;
-    tx.ondblclick=()=>editWedTask(tx,k,i);
-    tx.addEventListener('touchend',(()=>{let tm;return()=>{clearTimeout(tm);tm=setTimeout(()=>editWedTask(tx,k,i),500);}})());
-    const actions=document.createElement('div');actions.className='witem-actions';
-    const eb=document.createElement('button');eb.className='wact';eb.textContent='✏️';eb.onclick=()=>editWedTask(tx,k,i);
-    const db=document.createElement('button');db.className='wact';db.textContent='×';
-    db.onclick=async()=>{S.weddingTasks[k].splice(i,1);renderWedSection(k);await save('weddingTasks');};
-    actions.append(eb,db);row.append(chk,tx,actions);el.appendChild(row);
-  });
-}
-function editWedTask(txEl,k,i){
-  const cur=S.weddingTasks[k][i].text;
-  const inp=document.createElement('input');inp.className='ti';inp.value=cur;inp.style.cssText='flex:1;font-size:.86rem;';
-  txEl.replaceWith(inp);inp.focus();
-  const done=async()=>{const v=inp.value.trim();if(v)S.weddingTasks[k][i].text=v;renderWedSection(k);await save('weddingTasks');};
-  inp.onblur=done;inp.onkeydown=e=>{if(e.key==='Enter')done();};
-}
-async function addWedTask(){
-  const inp=document.getElementById('wed-new-in');const v=inp.value.trim();if(!v)return;
-  S.weddingTasks.priority.unshift({text:v,done:false});inp.value='';renderWedSection('priority');await save('weddingTasks');
-}
-
-// BUDGET
 function defaultBudget(){return[
-  {id:1,cat:'Wedding Ceremony',amt:5368.57},{id:2,cat:'Dinner Reception',amt:2252.55},{id:3,cat:'Alcohol Package',amt:858},
-  {id:4,cat:'DJ',amt:1055},{id:5,cat:'Photographer',amt:643},{id:6,cat:'Banjar Fee',amt:171},
-  {id:7,cat:'Accom / Flights',amt:2200},{id:8,cat:'Canape',amt:0},{id:9,cat:'Hair & Makeup',amt:0},
-  {id:10,cat:'Rehearsal Dinner',amt:0},{id:11,cat:'Family Event',amt:0},{id:12,cat:'Friends Event',amt:0},{id:13,cat:'Dog Sitter',amt:0},
+  {id:1,cat:'Wedding Ceremony',amt:5368.57},
+  {id:2,cat:'Dinner Reception',amt:2252.55},
+  {id:3,cat:'Alcohol Package',amt:858},
+  {id:4,cat:'DJ',amt:1055},
+  {id:5,cat:'Photographer',amt:643},
+  {id:6,cat:'Banjar Fee',amt:171},
+  {id:7,cat:'Accom / Flights',amt:2200},
+  {id:8,cat:'Canape',amt:0},
+  {id:9,cat:'Hair & Makeup',amt:0},
+  {id:10,cat:'Rehearsal Dinner',amt:0},
+  {id:11,cat:'Family Event',amt:0},
+  {id:12,cat:'Friends Event',amt:0},
+  {id:13,cat:'Dog Sitter',amt:0},
 ];}
+
 function renderBudget(){
-  if(!S.budget)S.budget=defaultBudget();
   const grid=document.getElementById('budget-grid');grid.innerHTML='';
   let total=0;
-  S.budget.forEach(item=>{
+  (S.budget||[]).forEach(item=>{
     total+=parseFloat(item.amt)||0;
     const el=document.createElement('div');el.className='bitem';
-    el.innerHTML=`<div class="bcat">${item.cat}</div><div class="bamt">${item.amt>0?'$'+parseFloat(item.amt).toLocaleString('en-AU',{minimumFractionDigits:0,maximumFractionDigits:2}):'<span style="color:var(--muted);font-size:.85rem">TBC</span>'}</div>`;
+    const amt=parseFloat(item.amt)||0;
+    el.innerHTML=`<div class="bcat">${item.cat}</div><div class="bamt">${amt>0?'$'+amt.toLocaleString('en-AU',{minimumFractionDigits:0,maximumFractionDigits:2}):'<span style="color:var(--muted);font-size:.85rem">TBC</span>'}</div>`;
     grid.appendChild(el);
   });
   document.getElementById('budget-total').textContent='$'+total.toLocaleString('en-AU',{minimumFractionDigits:2,maximumFractionDigits:2});
@@ -1178,8 +380,8 @@ function renderBudget(){
 function renderBudgetEditRows(){
   const el=document.getElementById('budget-edit-rows');if(!el)return;el.innerHTML='';
   (S.budget||[]).forEach((item,i)=>{
-    const row=document.createElement('div');row.style.cssText='display:flex;gap:8px;align-items:center;';
-    row.innerHTML=`<input class="fi" style="flex:2;" value="${item.cat}" onchange="S.budget[${i}].cat=this.value;renderBudget();save('budget');" placeholder="Category"><input class="fi" type="number" style="flex:1;" value="${item.amt}" onchange="S.budget[${i}].amt=parseFloat(this.value)||0;renderBudget();save('budget');" placeholder="0"><button style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:1rem;" onclick="S.budget.splice(${i},1);renderBudget();save('budget');">×</button>`;
+    const row=document.createElement('div');row.className='bedit-row';
+    row.innerHTML=`<input class="fi" style="flex:2;" value="${item.cat}" onchange="S.budget[${i}].cat=this.value;renderBudget();save('budget');" placeholder="Category"><input class="fi" type="number" style="flex:1;min-width:80px;" value="${item.amt}" onchange="S.budget[${i}].amt=parseFloat(this.value)||0;renderBudget();save('budget');" placeholder="0"><button style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:1.1rem;flex-shrink:0;" onclick="S.budget.splice(${i},1);renderBudget();save('budget');">×</button>`;
     el.appendChild(row);
   });
 }
@@ -1189,12 +391,19 @@ function toggleBudgetEdit(){
   v.style.display=show?'none':'';e.style.display=show?'':'none';
 }
 async function addBudgetItem(){
-  const cat=document.getElementById('bud-cat').value.trim();const amt=parseFloat(document.getElementById('bud-amt').value)||0;if(!cat)return;
-  S.budget.push({id:Date.now(),cat,amt});document.getElementById('bud-cat').value='';document.getElementById('bud-amt').value='';
+  const cat=document.getElementById('bud-cat').value.trim();
+  const amt=parseFloat(document.getElementById('bud-amt').value)||0;
+  if(!cat)return;
+  S.budget.push({id:Date.now(),cat,amt});
+  document.getElementById('bud-cat').value='';document.getElementById('bud-amt').value='';
   renderBudget();await save('budget');
 }
 
+// ══════════════════════════════════════════
 // GUESTS
+// ══════════════════════════════════════════
+let guestFilter='all';
+
 function defaultGuests(){return[
   {id:1,name:'Zarina Carty',group:'Family',rsvp:'yes'},{id:2,name:'Stephen Carty',group:'Family',rsvp:'yes'},
   {id:3,name:'Neville Mangan',group:'Family',rsvp:'yes'},{id:4,name:'Katherine Kemp',group:'Family',rsvp:'yes'},
@@ -1212,9 +421,9 @@ function defaultGuests(){return[
   {id:27,name:'Lachlan Pickering',group:'Friends',rsvp:'pending'},{id:28,name:'Meg',group:'Friends',rsvp:'pending'},
   {id:29,name:'Zac McLennon',group:'Friends',rsvp:'pending'},{id:30,name:'Paige Fisher',group:'Friends',rsvp:'pending'},
   {id:31,name:'Bec Roberts',group:'Friends',rsvp:'pending'},{id:32,name:'George Nelis',group:'Family',rsvp:'no'},
-  {id:33,name:'Vivienne Nelis',group:'Family',rsvp:'no'},{id:34,name:'Naomi O\'Connor',group:'Family',rsvp:'pending'},
-  {id:35,name:'Mark O\'Connor',group:'Family',rsvp:'pending'},{id:36,name:'Sophie O\'Connor',group:'Family',rsvp:'pending'},
-  {id:37,name:'Ben O\'Connor',group:'Family',rsvp:'pending'},{id:38,name:'Bronagh O\'Connor',group:'Family',rsvp:'pending'},
+  {id:33,name:'Vivienne Nelis',group:'Family',rsvp:'no'},{id:34,name:"Naomi O'Connor",group:'Family',rsvp:'pending'},
+  {id:35,name:"Mark O'Connor",group:'Family',rsvp:'pending'},{id:36,name:"Sophie O'Connor",group:'Family',rsvp:'pending'},
+  {id:37,name:"Ben O'Connor",group:'Family',rsvp:'pending'},{id:38,name:"Bronagh O'Connor",group:'Family',rsvp:'pending'},
   {id:39,name:'Nicole Clemence',group:'Friends',rsvp:'pending'},{id:40,name:'Wayne McInnes',group:'Friends',rsvp:'pending'},
   {id:41,name:'Rob West',group:'Friends',rsvp:'pending'},{id:42,name:'Sarah West',group:'Friends',rsvp:'pending'},
   {id:43,name:'Michael West',group:'Friends',rsvp:'pending'},{id:44,name:'Bridie West',group:'Friends',rsvp:'pending'},
@@ -1224,22 +433,47 @@ function defaultGuests(){return[
   {id:51,name:'Ian Carty',group:'Family',rsvp:'pending'},{id:52,name:'Karen Carty',group:'Family',rsvp:'pending'},
   {id:53,name:'Clare Carty',group:'Family',rsvp:'pending'},{id:54,name:'Anna Carty',group:'Family',rsvp:'pending'},
 ];}
+
+function setFilter(f){
+  guestFilter=f;
+  document.querySelectorAll('.fpill').forEach(p=>p.classList.remove('active'));
+  document.getElementById('fp-'+f).classList.add('active');
+  renderGuests();
+}
+
 function renderGuests(){
   const el=document.getElementById('guest-list');el.innerHTML='';
-  const inv=S.guestList.length;const yes=S.guestList.filter(g=>g.rsvp==='yes').length;const no=S.guestList.filter(g=>g.rsvp==='no').length;
-  document.getElementById('gs-inv').textContent=inv;document.getElementById('gs-yes').textContent=yes;document.getElementById('gs-no').textContent=no;
-  S.guestList.forEach((g,i)=>{
+  const all=S.guestList||[];
+  const yes=all.filter(g=>g.rsvp==='yes').length;
+  const no=all.filter(g=>g.rsvp==='no').length;
+  document.getElementById('gs-inv').textContent=all.length;
+  document.getElementById('gs-yes').textContent=yes;
+  document.getElementById('gs-no').textContent=no;
+
+  let filtered=all;
+  if(guestFilter==='family')filtered=all.filter(g=>(g.group||'').toLowerCase()==='family');
+  else if(guestFilter==='friends')filtered=all.filter(g=>(g.group||'').toLowerCase()==='friends');
+  else if(guestFilter==='yes')filtered=all.filter(g=>g.rsvp==='yes');
+  else if(guestFilter==='no')filtered=all.filter(g=>g.rsvp==='no');
+  else if(guestFilter==='pending')filtered=all.filter(g=>g.rsvp==='pending');
+
+  if(!filtered.length){el.innerHTML=`<div style="color:var(--muted);font-size:.82rem;padding:12px 0;">No guests match this filter</div>`;return;}
+
+  filtered.forEach(g=>{
+    const i=all.findIndex(x=>x.id===g.id);
     const row=document.createElement('div');row.className='grow';
-    const name=document.createElement('div');name.style.cssText='font-size:.82rem;font-weight:500;';name.textContent=g.name;
-    const grp=document.createElement('div');grp.style.cssText='font-size:.72rem;color:var(--muted);';grp.textContent=g.group||'';
-    const rsvp=document.createElement('button');rsvp.className=`rsvp ${g.rsvp==='yes'?'y':g.rsvp==='no'?'n':'p'}`;
-    rsvp.textContent=g.rsvp==='yes'?'✓ YES':g.rsvp==='no'?'✗ NO':'PENDING';
+    const name=document.createElement('div');name.className='gname';name.textContent=g.name;
+    const grp=document.createElement('div');grp.className='ggrp';grp.textContent=g.group||'';
+    const rsvp=document.createElement('button');
+    rsvp.className='rsvp '+(g.rsvp==='yes'?'y':g.rsvp==='no'?'n':'p');
+    rsvp.textContent=g.rsvp==='yes'?'✓ Yes':g.rsvp==='no'?'✗ No':'Pending';
     rsvp.onclick=async()=>{const cycle={pending:'yes',yes:'no',no:'pending'};S.guestList[i].rsvp=cycle[g.rsvp]||'pending';renderGuests();await save('guestList');};
     const del=document.createElement('button');del.className='gdel';del.textContent='×';
     del.onclick=async()=>{S.guestList.splice(i,1);renderGuests();await save('guestList');};
     row.append(name,grp,rsvp,del);el.appendChild(row);
   });
 }
+
 async function addGuest(){
   const name=document.getElementById('g-name').value.trim();if(!name)return;
   const group=document.getElementById('g-group').value.trim();
@@ -1248,170 +482,123 @@ async function addGuest(){
   renderGuests();await save('guestList');
 }
 
-// ═══════════════════════════════════════════
-// JOB
-// ═══════════════════════════════════════════
-function defaultJobPrestart(){return[
-  {text:'New work clothes sorted',done:true},{text:'Alarm set for first day',done:false},
-  {text:'Route / commute planned',done:false},{text:'Lunch sorted for day 1',done:false},
-];}
-function renderJob(){
-  const el=document.getElementById('job-prestart');el.innerHTML='';
-  S.jobPrestart.forEach((t,i)=>el.appendChild(makeTodo(t,i,'jobPrestart')));
-  const notes=document.getElementById('job-notes');notes.innerHTML='';
-  S.jobNotes.forEach(n=>{const c=document.createElement('div');c.className='jncard';c.innerHTML=`<div class="jndate">${n.date}</div><div class="jntxt">${n.text}</div>`;notes.appendChild(c);});
-  renderJobGoals();
-}
-async function saveJobNote(){
-  const ta=document.getElementById('job-ta');const v=ta.value.trim();if(!v)return;
-  S.jobNotes.unshift({date:new Date().toLocaleDateString('en-AU',{weekday:'short',day:'numeric',month:'short'}),text:v});
-  ta.value='';renderJob();await save('jobNotes');
-}
-function renderJobGoals(){
-  const el=document.getElementById('job-goals');el.innerHTML='';
-  if(!S.jobGoals.length){el.appendChild(emptyMsg('No goals yet'));return;}
-  S.jobGoals.forEach((t,i)=>el.appendChild(makeTodo(t,i,'jobGoals')));
-}
-async function addJobGoal(){
-  const inp=document.getElementById('job-goal-in');const v=inp.value.trim();if(!v)return;
-  S.jobGoals.push({text:v,done:false});inp.value='';renderJobGoals();await save('jobGoals');
+// ══════════════════════════════════════════
+// TO-DO LIST
+// ══════════════════════════════════════════
+function defaultWedding(){return{
+  priority:[
+    {text:'Finish invitations in Canva',done:false},
+    {text:'Send invitations (at least 10 months out)',done:false},
+    {text:'Organise resort family accommodation',done:false},
+  ],
+  travel:[
+    {text:'Book flights (US guests)',done:false},
+    {text:'Book transport shuttles (US)',done:false},
+    {text:'Organise resort family accommodation',done:false},
+    {text:'Organise transport shuttles (guests)',done:true},
+    {text:'Book honeymoon accommodation — Ibah',done:true},
+  ],
+  activities:[
+    {text:'Plan speeches',done:false},
+    {text:'Organise cameras for guests',done:false},
+    {text:'Night before drinks — book restaurant',done:false},
+    {text:'Post-wedding recovery — organise & book',done:false},
+    {text:'Create guest itinerary',done:false},
+    {text:'Book transport from venue to Ibah',done:false},
+    {text:'Email itinerary 1 month before & update website',done:false},
+  ],
+  guests:[
+    {text:'Confirm guest contact info',done:true},
+    {text:'Create Save the Date in Canva',done:true},
+    {text:'Send Save the Dates',done:true},
+    {text:'Create invitations in Canva',done:false},
+    {text:'Create wedding website',done:false},
+    {text:'Send invitations (at least 10 months out)',done:false},
+    {text:'Confirm final numbers (at least 8 months out)',done:false},
+    {text:'Confirm post-wedding plans with friends & family',done:false},
+  ],
+  venue:[
+    {text:'Book venue and pay deposit',done:true},
+    {text:'Organise girls getting ready location',done:false},
+    {text:'Finalise wedding package (menu, flowers, photography)',done:false},
+    {text:'Finalise timeline for the day',done:false},
+    {text:'Make final payment for venue',done:false},
+  ],
+  legal:[
+    {text:'Select & book Adelaide celebrant (near Seacliff)',done:false},
+    {text:'Gather birth certificates / passports for NOIM',done:false},
+    {text:'Lodge NOIM in Adelaide (at least 1 month before signing)',done:false},
+    {text:'Perform legal signing in Adelaide with two witnesses',done:false},
+    {text:'Ensure Marriage Certificate received for name changes',done:false},
+  ],
+  personal:[
+    {text:'Wedding dress & shoes',done:false},
+    {text:"Tom's suit & shoes",done:false},
+    {text:'Dog / house sitter',done:false},
+    {text:'Hair and makeup (TBC via venue)',done:false},
+  ],
+};}
+
+function renderTodos(){
+  ['priority','travel','activities','guests','venue','legal','personal'].forEach(k=>renderWedSection(k));
+  renderTodoProgress();
 }
 
-// ═══════════════════════════════════════════
-// WORK CAL
-// ═══════════════════════════════════════════
-function toggleWCType(){
-  const t=document.getElementById('wc-type').value;
-  document.getElementById('wc-once-row').style.display=t==='once'?'':'none';
-  document.getElementById('wc-weekly-row').style.display=t==='weekly'?'':'none';
-  document.getElementById('wc-monthly-row').style.display=t==='monthly'?'':'none';
-}
-async function addWorkEvent(){
-  const title=document.getElementById('wc-title').value.trim();if(!title)return;
-  const type=document.getElementById('wc-type').value;const notes=document.getElementById('wc-notes').value.trim();
-  const e={id:Date.now(),title,type,notes};
-  if(type==='once'){e.date=document.getElementById('wc-date').value;e.time=document.getElementById('wc-time').value;}
-  else if(type==='weekly'){e.weekday=document.getElementById('wc-wday').value;e.time=document.getElementById('wc-wtime').value;}
-  else{e.monthday=parseInt(document.getElementById('wc-mday').value);e.time=document.getElementById('wc-mtime').value;}
-  S.workEvents.push(e);document.getElementById('wc-title').value='';document.getElementById('wc-notes').value='';
-  renderWorkCal();renderWeek();renderMonth();await save('workEvents');
-}
-async function deleteWorkEvent(id){S.workEvents=S.workEvents.filter(e=>e.id!==id);renderWorkCal();renderWeek();renderMonth();await save('workEvents');}
-function isThisWeekEv(e){
-  const mon=getMonday();const sun=new Date(mon);sun.setDate(mon.getDate()+6);sun.setHours(23,59,59,999);
-  if(e.type==='weekly')return true;
-  if(e.type==='monthly'){for(let d=new Date(mon);d<=sun;d.setDate(d.getDate()+1))if(d.getDate()===e.monthday)return true;return false;}
-  if(e.type==='once'&&e.date){const ed=new Date(e.date+'T00:00:00');return ed>=mon&&ed<=sun;}
-  return false;
-}
-function makeEvRow(e,delFn){
-  const row=document.createElement('div');row.className='evrow';
-  const badge=document.createElement('div');badge.className=`evbadge ev-${e.type}`;badge.textContent=e.type==='once'?'ONE-OFF':e.type.toUpperCase();
-  const body=document.createElement('div');body.className='evbody';
-  body.innerHTML=`<div class="evtitle">${e.title}</div><div class="evmeta">${fmtEvMeta(e)}${e.notes?' · '+e.notes:''}</div>`;
-  const del=document.createElement('button');del.className='evdel';del.textContent='×';del.onclick=()=>delFn(e.id);
-  row.append(badge,body,del);return row;
-}
-function renderWorkCal(){
-  const wkEl=document.getElementById('wc-week');const allEl=document.getElementById('wc-all');
-  wkEl.innerHTML='';allEl.innerHTML='';
-  const tw=S.workEvents.filter(isThisWeekEv);
-  if(!tw.length)wkEl.appendChild(emptyMsg('Nothing scheduled this week'));
-  else tw.forEach(e=>wkEl.appendChild(makeEvRow(e,deleteWorkEvent)));
-  if(!S.workEvents.length)allEl.appendChild(emptyMsg('No work events yet'));
-  else S.workEvents.forEach(e=>allEl.appendChild(makeEvRow(e,deleteWorkEvent)));
+function renderTodoProgress(){
+  const el=document.getElementById('todo-progress');el.innerHTML='';
+  const cats={priority:'Priorities',travel:'Travel',activities:'Activities',guests:'Guest Comms',venue:'Venue',legal:'Legal',personal:'Personal'};
+  Object.entries(cats).forEach(([k,label])=>{
+    const tasks=S.weddingTasks[k]||[];
+    const done=tasks.filter(t=>t.done).length;
+    const pct=tasks.length?Math.round(done/tasks.length*100):0;
+    const wrap=document.createElement('div');wrap.className='prog-wrap';
+    wrap.innerHTML=`<div class="prog-labels"><span>${label}</span><span style="color:var(--muted)">${done}/${tasks.length}</span></div><div class="prog-bar"><div class="prog-fill" style="width:${pct}%;background:${pct===100?'var(--green)':'var(--pink)'}"></div></div>`;
+    el.appendChild(wrap);
+  });
 }
 
-// ═══════════════════════════════════════════
-// REMINDERS
-// ═══════════════════════════════════════════
-function toggleRMFreq(){
-  const f=document.getElementById('rm2-freq').value;
-  document.getElementById('rm2-weekly-row').style.display=f==='weekly'?'':'none';
-  document.getElementById('rm2-monthly-row').style.display=f==='monthly'?'':'none';
-}
-async function addRemOnce(){
-  const title=document.getElementById('rm1-title').value.trim();if(!title)return;
-  const e={id:Date.now(),title,type:'once',date:document.getElementById('rm1-date').value,time:document.getElementById('rm1-time').value,notes:document.getElementById('rm1-notes').value.trim()};
-  S.reminders.push(e);['rm1-title','rm1-date','rm1-time','rm1-notes'].forEach(id=>document.getElementById(id).value='');
-  renderReminders();renderWeek();renderMonth();await save('reminders');
-}
-async function addRemRecurring(){
-  const title=document.getElementById('rm2-title').value.trim();if(!title)return;
-  const freq=document.getElementById('rm2-freq').value;
-  const e={id:Date.now(),title,type:freq,notes:document.getElementById('rm2-notes').value.trim()};
-  if(freq==='weekly'){e.weekday=document.getElementById('rm2-wday').value;e.time=document.getElementById('rm2-wtime').value;}
-  else{e.monthday=parseInt(document.getElementById('rm2-mday').value);e.time=document.getElementById('rm2-mtime').value;}
-  S.reminders.push(e);document.getElementById('rm2-title').value='';document.getElementById('rm2-notes').value='';
-  renderReminders();renderWeek();renderMonth();await save('reminders');
-}
-async function deleteReminder(id){S.reminders=S.reminders.filter(r=>r.id!==id);renderReminders();renderWeek();renderMonth();await save('reminders');}
-function renderReminders(){
-  const onceEl=document.getElementById('rm-once-list');const recEl=document.getElementById('rm-rec-list');
-  onceEl.innerHTML='';recEl.innerHTML='';
-  const once=S.reminders.filter(r=>r.type==='once').sort((a,b)=>(a.date||'').localeCompare(b.date||''));
-  const rec=S.reminders.filter(r=>r.type==='weekly'||r.type==='monthly');
-  if(!once.length)onceEl.appendChild(emptyMsg('No once-off reminders yet'));
-  else once.forEach(r=>onceEl.appendChild(makeEvRow(r,deleteReminder)));
-  if(!rec.length)recEl.appendChild(emptyMsg('No recurring reminders yet'));
-  else rec.forEach(r=>recEl.appendChild(makeEvRow(r,deleteReminder)));
+function renderWedSection(k){
+  const el=document.getElementById('wed-'+k);if(!el)return;el.innerHTML='';
+  const tasks=S.weddingTasks[k]||[];
+  if(!tasks.length){const d=document.createElement('div');d.style.cssText='color:var(--muted);font-size:.8rem;padding:6px 0;';d.textContent='No tasks yet';el.appendChild(d);return;}
+  tasks.forEach((t,i)=>{
+    const row=document.createElement('div');row.className='witem';
+    const chk=document.createElement('div');chk.className='tck'+(t.done?' done':'');
+    chk.onclick=async()=>{S.weddingTasks[k][i].done=!S.weddingTasks[k][i].done;renderWedSection(k);renderTodoProgress();await save('weddingTasks');};
+    const tx=document.createElement('div');tx.className='ttx'+(t.done?' done':'');tx.textContent=t.text;
+    tx.ondblclick=()=>editWedTask(tx,k,i);
+    tx.addEventListener('touchend',(()=>{let tm;return()=>{clearTimeout(tm);tm=setTimeout(()=>editWedTask(tx,k,i),600);}})());
+    const actions=document.createElement('div');actions.className='witem-actions';
+    const eb=document.createElement('button');eb.className='wact';eb.textContent='✏️';eb.onclick=()=>editWedTask(tx,k,i);
+    const db=document.createElement('button');db.className='wact';db.textContent='×';
+    db.onclick=async()=>{S.weddingTasks[k].splice(i,1);renderWedSection(k);renderTodoProgress();await save('weddingTasks');};
+    actions.append(eb,db);row.append(chk,tx,actions);el.appendChild(row);
+  });
 }
 
-function toggleRmRecur(){} // legacy no-op
-function toggleRMFreq(){
-  const freq=document.getElementById('rm2-freq').value;
-  document.getElementById('rm2-weekly-row').style.display=freq==='weekly'?'flex':'none';
-  document.getElementById('rm2-monthly-row').style.display=freq==='monthly'?'flex':'none';
+function editWedTask(txEl,k,i){
+  const inp=document.createElement('input');inp.className='ti';inp.value=S.weddingTasks[k][i].text;inp.style.cssText='flex:1;font-size:.86rem;';
+  txEl.replaceWith(inp);inp.focus();
+  const done=async()=>{const v=inp.value.trim();if(v)S.weddingTasks[k][i].text=v;renderWedSection(k);await save('weddingTasks');};
+  inp.onblur=done;inp.onkeydown=e=>{if(e.key==='Enter')done();};
 }
 
-async function addRemOnce(){
-  const title=document.getElementById('rm1-title').value.trim();
-  if(!title)return;
-  const e={id:Date.now(),title,type:'once',
-    date:document.getElementById('rm1-date').value,
-    time:document.getElementById('rm1-time').value,
-    notes:document.getElementById('rm1-notes').value.trim()};
-  S.reminders.push(e);
-  document.getElementById('rm1-title').value='';
-  document.getElementById('rm1-date').value='';
-  document.getElementById('rm1-time').value='';
-  document.getElementById('rm1-notes').value='';
-  renderReminders();renderWeek();renderMonth();await save('reminders');
+async function addWedTask(){
+  const inp=document.getElementById('wed-new-in');const v=inp.value.trim();if(!v)return;
+  const cat=document.getElementById('wed-new-cat').value;
+  S.weddingTasks[cat].unshift({text:v,done:false});
+  inp.value='';
+  renderWedSection(cat);renderTodoProgress();await save('weddingTasks');
 }
 
-async function addRemRecurring(){
-  const title=document.getElementById('rm2-title').value.trim();
-  if(!title)return;
-  const freq=document.getElementById('rm2-freq').value;
-  const e={id:Date.now(),title,type:freq,notes:document.getElementById('rm2-notes').value.trim()};
-  if(freq==='weekly'){
-    e.weekday=document.getElementById('rm2-wday').value;
-    e.time=document.getElementById('rm2-wtime').value;
-  } else {
-    e.monthday=parseInt(document.getElementById('rm2-mday').value);
-    e.time=document.getElementById('rm2-mtime').value;
-  }
-  S.reminders.push(e);
-  document.getElementById('rm2-title').value='';
-  document.getElementById('rm2-notes').value='';
-  renderReminders();renderWeek();renderMonth();await save('reminders');
-}
-
-async function addReminderOnce(){await addRemOnce();}
-async function addReminderRecurring(){await addRemRecurring();}
-
-// ═══════════════════════════════════════════
+// ══════════════════════════════════════════
 // RENDER ALL
-// ═══════════════════════════════════════════
+// ══════════════════════════════════════════
 function renderAll(){
-  renderWeek();renderMonth();renderGym();renderNutrition();
-  renderMeasurements();renderRecipes();renderPrepList();
-  renderVaping();renderCravings();renderWedding();renderBudget();
-  renderJob();renderWorkCal();renderReminders();
+  renderOverview();
+  renderGuests();
+  renderTodos();
 }
-
-// Boot
-document.getElementById('pin-in').addEventListener('keydown',e=>{if(e.key==='Enter')pinSubmit();});
 </script>
 </body>
 </html>
